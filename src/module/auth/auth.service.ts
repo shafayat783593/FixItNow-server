@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt'
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken"
 import { Role } from "../../../generated/prisma/enums"
 const userRegisterInDB = async (payload: RegisterUserPayload) => {
-  const { name, email, password, phone } = payload;
+  const { name, email, password, phone, role } = payload;
 
   const isUserExist = await prisma.user.findUnique({
     where: { email },
@@ -28,8 +28,8 @@ const userRegisterInDB = async (payload: RegisterUserPayload) => {
       email,
       password: hashedPassword,
       phone,
-          role: Role.CUSTOMER,
-          // তোমার enum অনুযায়ী value দাও
+   role: role || Role.CUSTOMER,
+      // তোমার enum অনুযায়ী value দাও
       // status না দিলেও হবে, default ACTIVE
     },
   });
@@ -66,8 +66,8 @@ const userLoginInDB = async (payload: ILogin) => {
         role: user.role,
     }
 
-    const accessToken = createToken(jwtPayload, config.jwt_accessToken, config.jwt_accessToken_Expire as SignOptions)
-    const refreshToken = createToken(jwtPayload, config.jwt_refreshToken, config.jwt_refreshToken_Expire as SignOptions)
+    const accessToken = await createToken(jwtPayload, config.jwt_accessToken, config.jwt_accessToken_Expire as SignOptions)
+    const refreshToken =await createToken(jwtPayload, config.jwt_refreshToken, config.jwt_refreshToken_Expire as SignOptions)
     return {
         accessToken,
         refreshToken
@@ -96,7 +96,7 @@ const refreshTokenSave = async (token: string) => {
         role: user.role
     }
 
-    const accessToken = createToken(jwtPayload, config.jwt_accessToken, config.jwt_accessToken_Expire as SignOptions)
+    const accessToken = await createToken(jwtPayload, config.jwt_accessToken, config.jwt_accessToken_Expire as SignOptions)
     return {
         accessToken
     }

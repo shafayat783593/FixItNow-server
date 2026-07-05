@@ -10,7 +10,7 @@ export const createToken = async (payload: JwtPayload, secret: string, expiresIn
 export const veryfyToken = async (token: string, secret: string) => {
     
     try {
-        const verifiedToken = await jwt.verify(token, secret)
+        const verifiedToken =  await jwt.verify(token, secret)
         return {
             success:true,
             data: verifiedToken 

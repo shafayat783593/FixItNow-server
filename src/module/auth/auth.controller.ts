@@ -20,22 +20,36 @@ const registerUser = catchAsync(async (req: Request, res: Response,next:NextFunc
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body;
-    const {accessToken, refreshToken} = await authService.userLoginInDB(payload)
-    
+    const { accessToken, refreshToken } = await authService.userLoginInDB(payload)
+    console.log(accessToken,refreshToken)
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "none",
+        maxAge:1000  *60 * 60 *24 *7 
+    })
+     res.cookie("accessToken", accessToken, {
+         httpOnly: true,
+        secure: false,
+        sameSite: "none",
+        maxAge:1000  *60 * 60 *24 
+    })
+
     sendResponse(res, {
         success: true,
         message: "login successfully",
-        data: { accessToken, refreshToken },
+        data:{ accessToken, refreshToken },
         statusCode: httpStatus.OK,
 
-        
     })
+
+
 
 })
     
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
     const refreshtoken = req.cookies.refreshToken
-    const accessToken = await authService.refreshTokenSave(refreshtoken)
+    const {accessToken} = await authService.refreshTokenSave(refreshtoken)
     res.cookie("accessToken", accessToken, {
          httpOnly: true,
         secure: false,
