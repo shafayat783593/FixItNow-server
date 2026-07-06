@@ -1,0 +1,29 @@
+import { NextFunction, Request, Response } from "express";
+import { catchAsync } from "../../utils/cashAsync";
+import { sendResponse } from "../../utils/sendResponse";
+
+import  httpStatus  from "http-status";
+import { service } from "./services.service";
+
+const createService = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const technicianId = req.user?.id
+    const payload = req.body
+    const result = await service.createService(payload,technicianId as string)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Service created successfully",
+        data:result
+})
+})
+
+const getAllServices = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const quary = req.query
+    const result = await service.getAllService(quary)
+    
+})
+
+
+export const serviceController = {
+    createService
+}

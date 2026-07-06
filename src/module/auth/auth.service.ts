@@ -7,44 +7,56 @@ import bcrypt from 'bcrypt'
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken"
 import { Role } from "../../../generated/prisma/enums"
 const userRegisterInDB = async (payload: RegisterUserPayload) => {
-  const { name, email, password, phone, role } = payload;
+    const { name, email, password, phone, role } = payload;
 
-  const isUserExist = await prisma.user.findUnique({
-    where: { email },
-  });
+    const isUserExist = await prisma.user.findUnique({
+        where: { email },
+    });
 
-  if (isUserExist) {
-    throw new Error("User already exists");
-  }
+    if (isUserExist) {
+        throw new Error("User already exists");
+    }
 
-  const hashedPassword = await bcrypt.hash(
-    password,
-    Number(config.bcrypt_salt_rounds)
-  );
+    const hashedPassword = await bcrypt.hash(
+        password,
+        Number(config.bcrypt_salt_rounds)
+    );
 
-  const createdUser = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-   role: role || Role.CUSTOMER,
-      // তোমার enum অনুযায়ী value দাও
-      // status না দিলেও হবে, default ACTIVE
-    },
-  });
 
-  const user = await prisma.user.findUnique({
-    where: { id: createdUser.id },
-    omit: {
-      password: true,
-    },
-    include: {
-      technicianProfile: true,
-    },
-  });
+    const result = await prisma.$transaction(async (tex) => {
+        const createdUser = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                phone,
+                role: role || Role.CUSTOMER,
+            },
 
-  return user;
+        });
+        if (createdUser.role === "TECHNICIAN") {
+            await tex.technicianProfile.create({
+                data: {
+                    userId: createdUser.id,
+                    bio: "",
+                    experience: 0,
+                    location: "",
+                }
+            })
+        }
+        return await tex.user.findUnique({
+            where: { id: createdUser.id },
+            omit: {
+                password: true,
+            },
+            include: {
+                technicianProfile: true,
+            },
+        });
+    })
+
+    return result 
+
 };
 
 const userLoginInDB = async (payload: ILogin) => {
@@ -67,7 +79,7 @@ const userLoginInDB = async (payload: ILogin) => {
     }
 
     const accessToken = await createToken(jwtPayload, config.jwt_accessToken, config.jwt_accessToken_Expire as SignOptions)
-    const refreshToken =await createToken(jwtPayload, config.jwt_refreshToken, config.jwt_refreshToken_Expire as SignOptions)
+    const refreshToken = await createToken(jwtPayload, config.jwt_refreshToken, config.jwt_refreshToken_Expire as SignOptions)
     return {
         accessToken,
         refreshToken
@@ -103,8 +115,33 @@ const refreshTokenSave = async (token: string) => {
 
 }
 
+
+const getCurrentLoginUser = async (userId: string) => {
+    console.log("userId.................................", userId)
+
+    const user = await prisma.user.findFirstOrThrow({
+        where: {
+            id: userId
+        },
+        include: {
+            technicianProfile: true,
+            bookingsAsCustomer: true,
+            reviews: true
+        }
+
+    })
+    if (user.role === Role.TECHNICIAN) {
+        return user;
+
+    }
+
+    const { technicianProfile, ...rest } = user;
+    return rest;
+
+}
 export const authService = {
     userRegisterInDB,
     userLoginInDB,
     refreshTokenSave,
+    getCurrentLoginUser
 }
