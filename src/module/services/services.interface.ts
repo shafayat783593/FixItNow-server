@@ -11,7 +11,8 @@ export interface IService {
 
 export interface IServiceQuery {
 
-    searchItem?: string
+    searchItem?: string;
+    title?: string;
     category?: string;
     location?: string;
     rating?: string;

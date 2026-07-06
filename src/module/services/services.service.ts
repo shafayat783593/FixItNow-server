@@ -44,6 +44,7 @@ const createService = async (payload: IService, technicianId: string) => {
 };
 
 const getAllService = async (query: IServiceQuery) => {
+    console.log("query", query)
 
     const limit = query.limit ? Number(query.limit) : 10
 
@@ -84,6 +85,15 @@ const getAllService = async (query: IServiceQuery) => {
 
             ]
         })
+    }
+
+    if (query.title) {
+        andConditions.push({
+            title: {
+                contains: query.title,
+                mode: "insensitive",
+            },
+        });
     }
 
     if (query.category) {
@@ -144,15 +154,17 @@ const getAllService = async (query: IServiceQuery) => {
 
     const totalServiceCount = await prisma.service.count({
         where: {
-            AND:andConditions
-        }
+            AND: andConditions
+        },
+
+
     })
 
 
     return {
         data: service,
-        mata: {
-              page: page,
+        meta: {
+            page: page,
             limit: limit,
             total: totalServiceCount,
             totalPages: Math.ceil(totalServiceCount / limit)

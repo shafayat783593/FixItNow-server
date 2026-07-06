@@ -20,10 +20,17 @@ const createService = catchAsync(async (req: Request, res: Response, next: NextF
 const getAllServices = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const quary = req.query
     const result = await service.getAllService(quary)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Service fetched successfully",
+        data:result
+    })
     
 })
 
 
 export const serviceController = {
-    createService
+    createService,
+    getAllServices,
 }
