@@ -1,5 +1,6 @@
+import { Prisma } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
-import { IService, IServiceQuery,  } from "./services.interface";
+import { IService, IServiceQuery, } from "./services.interface";
 
 
 const createService = async (payload: IService, technicianId: string) => {
@@ -9,9 +10,9 @@ const createService = async (payload: IService, technicianId: string) => {
     }
     console.log(technicianId)
     const technician = await prisma.technicianProfile.findUnique({
-        where: { userId:technicianId }
+        where: { userId: technicianId }
     })
-     
+
 
     if (!technician) {
         throw new Error("Technician profile not found ! pleace create your profile first")
@@ -28,7 +29,7 @@ const createService = async (payload: IService, technicianId: string) => {
 
     const result = await prisma.service.create({
         data: {
-            technicianId:technician.id,
+            technicianId: technician.id,
             categoryId,
             title,
             description,
@@ -42,12 +43,124 @@ const createService = async (payload: IService, technicianId: string) => {
 
 };
 
-const getAllService = async (query:IServiceQuery) => {
-    
-    const limit = query.limit ? parseInt(query.limit) : 10;
-    const  page = query.page ?
-    
+const getAllService = async (query: IServiceQuery) => {
+
+    const limit = query.limit ? Number(query.limit) : 10
+
+    const page = query.page ? Number(query.page) : 1
+
+    const skip = (page - 1) * limit
+
+
+    const sortBy = query.sortBy ? query.sortBy : "createdAt"
+
+    const sortOrder = query.sortOrder ? query.sortOrder : "desc"
+
+    const andConditions: Prisma.ServiceWhereInput[] = [];
+
+    if (query.searchItem) {
+        andConditions.push({
+            OR: [
+                {
+                    title: {
+                        contains: query.searchItem,
+                        mode: 'insensitive'
+                    }
+                }, {
+                    category: {
+                        name: {
+                            contains: query.searchItem,
+                            mode: "insensitive",
+                        }
+                    },
+
+                },
+                {
+                    description: {
+                        contains: query.searchItem,
+                        mode: "insensitive",
+                    },
+                },
+
+            ]
+        })
+    }
+
+    if (query.category) {
+        andConditions.push({
+            category: {
+                name: {
+                    contains: query.category,
+                    mode: "insensitive"
+                }
+            }
+        })
+
+    }
+
+
+    if (query.location) {
+        andConditions.push({
+            technician: {
+                location: {
+                    contains: query.location,
+                    mode: "insensitive"
+                }
+            }
+        })
+    }
+
+    if (query.minPrice || query.maxPrice) {
+        andConditions.push({
+            price: {
+                gte: query.minPrice ? Number(query.minPrice) : undefined,
+                lte: query.maxPrice ? Number(query.maxPrice) : undefined,
+            },
+        });
+    }
+
+
+    if (query.rating) {
+        andConditions.push({
+            technician: {
+                rating: {
+                    gte: Number(query.rating),
+                },
+            },
+        });
+    }
+    const service = await prisma.service.findMany({
+        where: {
+            AND: andConditions
+        },
+        take: limit,
+        skip: skip,
+        orderBy: {
+            [sortBy]: sortOrder
+
+        },
+
+    })
+
+    const totalServiceCount = await prisma.service.count({
+        where: {
+            AND:andConditions
+        }
+    })
+
+
+    return {
+        data: service,
+        mata: {
+              page: page,
+            limit: limit,
+            total: totalServiceCount,
+            totalPages: Math.ceil(totalServiceCount / limit)
+        }
+    }
+
 }
+
 
 
 export const service = {

@@ -1,6 +1,6 @@
 import { ServiceWhereInput } from "../../../generated/prisma/models";
 
-export interface IService{
+export interface IService {
     categoryId: string;
     title: string;
     description: string;
@@ -10,17 +10,17 @@ export interface IService{
 
 
 export interface IServiceQuery {
-  searchTerm?: string;
 
-  category?: string;
-  location?: string;
+    searchItem?: string
+    category?: string;
+    location?: string;
+    rating?: string;
+    minPrice?: string;
+    maxPrice?: string;
 
-  minPrice?: string;
-  maxPrice?: string;
+    page?: string;
+    limit?: string;
 
-  page?: string;
-  limit?: string;
-
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
 }
