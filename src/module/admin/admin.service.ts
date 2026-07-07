@@ -116,6 +116,8 @@ const sortBy = allowedSortFields.includes(query.sortBy as any)
 
 
 const updateUser = async (id: string, payload: IUpdateUser) => {
+
+    console.log("djlflf Id",id)
     const existingUser = await prisma.user.findUnique({
         where: {
             id,

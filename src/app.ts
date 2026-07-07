@@ -7,6 +7,7 @@ import { serviceRouter } from './module/services/services.route';
 import { categoryRouter } from './module/category/category.route';
 import { technicianRouter } from './module/technician/technician.route';
 import { adminRouter } from './module/admin/admin.route';
+import { bookingRouter } from './module/booking/booking.route';
 const app:Application = express()
 
 
@@ -27,7 +28,8 @@ app.use("/api/auth", authRouter)
 app.use("/api/categories", categoryRouter)
 app.use("/api/technician",technicianRouter )
 app.use("/api/services", serviceRouter)
-app.use("/api/admin",adminRouter)
+app.use("/api/admin", adminRouter)
+app.use("/api/bookings",bookingRouter)
 
 
 export default app
