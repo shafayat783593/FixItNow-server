@@ -16,6 +16,20 @@ const getAllTechnicians = catchAsync(async (req, res, next) => {
 
 })
 
+
+const getTechnicianById = catchAsync(async (req, res, next) => {
+    const { id } = req.params
+    const result = await technicianService.getTechnicianById(id as string)   
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Technician fetched successfully",
+        data: result
+    })
+})
+
+
 export const technicianController = {
     getAllTechnicians,
+    getTechnicianById
 }

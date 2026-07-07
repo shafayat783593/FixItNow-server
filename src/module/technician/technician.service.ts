@@ -87,7 +87,7 @@ const sortBy = allowedSortFields.includes(query.sortBy as any)
         skip: skip,
         take: limit,
         orderBy: {
-            [sortBy]: sortOrder
+            [sortBy as string]: sortOrder
 
         },
 
@@ -101,7 +101,7 @@ const sortBy = allowedSortFields.includes(query.sortBy as any)
 
 
     return {
-        data: service,
+        data: technicians,
         meta: {
             page: page,
             limit: limit,
@@ -112,8 +112,24 @@ const sortBy = allowedSortFields.includes(query.sortBy as any)
 }
 
 
+const getTechnicianById = async (id: string) => {
+
+    const result = await prisma.technicianProfile.findUniqueOrThrow({
+        where: {
+            userId:id
+        },
+        include:{
+            reviews:true,
+        }
+    })
+
+    console.log("result", result)
+
+    return result 
+}
 
 
 export const technicianService = {
-    getAllTechnicians
+    getAllTechnicians,
+    getTechnicianById
 };

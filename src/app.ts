@@ -5,6 +5,7 @@ import express, { Application, Request, Response }  from 'express';
 import { authRouter } from './module/auth/auth.routes';
 import { serviceRouter } from './module/services/services.route';
 import { categoryRouter } from './module/category/category.route';
+import { technicianRouter } from './module/technician/technician.route';
 const app:Application = express()
 
 
@@ -23,7 +24,7 @@ app.get('/', (req:Request, res:Response) => {
 
 app.use("/api/auth", authRouter)
 app.use("/api/categories", categoryRouter)
-app.use("/api/technician",serviceRouter )
+app.use("/api/technicians",technicianRouter )
 app.use("/api/services",serviceRouter)
 
 
