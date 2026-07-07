@@ -26,3 +26,9 @@ export interface ITechnicianUpdate {
   location?: string;
  
 }
+
+
+
+export interface IBookingStatus{
+  
+}

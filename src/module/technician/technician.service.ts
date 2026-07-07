@@ -1,5 +1,5 @@
 import { rmSync } from "node:fs";
-import { Prisma, Role } from "../../../generated/prisma/client";
+import { BookingStatus, Prisma, Role } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { service } from "../services/services.service";
 import { ITechnicianQuery, ITechnicianUpdate } from "./technician.interface";
@@ -226,9 +226,37 @@ const getTechnicianBooking = async (tecId:string) => {
     return result
 }
 
+
+
+
+const updateupdateTechnicianBookingStatus = async (userId: string, bookingId: string ,action:BookingStatus) => {
+    
+  const technicianProfile = await prisma.technicianProfile.findUniqueOrThrow({
+    where: { userId },
+  });
+
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!booking) {
+    throw new Error("Booking not found");
+  }
+
+  if (booking.technicianId !== technicianProfile.id) {
+    throw new Error("You are not allowed to update this booking");
+  }
+  const updatedBooking = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: action },
+  });
+
+  return updatedBooking;
+};
 export const technicianService = {
     getAllTechnicians,
     getTechnicianById,
     updateTechnicianProfile,
-    getTechnicianBooking
+    getTechnicianBooking,
+    updateupdateTechnicianBookingStatus
 };
