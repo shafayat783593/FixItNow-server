@@ -61,7 +61,6 @@ const getBookingById = async (bookingId:string) => {
                 user:true
             }
         },
-            
             service: true,
             payment: true,
             customer: true,

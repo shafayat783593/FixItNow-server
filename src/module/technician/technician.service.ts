@@ -1,3 +1,4 @@
+import { rmSync } from "node:fs";
 import { Prisma, Role } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { service } from "../services/services.service";
@@ -191,8 +192,43 @@ const updateTechnicianProfile = async (id: string, updateData: ITechnicianUpdate
 }
 
 
+const getTechnicianBooking = async (tecId:string) => {
+
+
+    const technicianProfile = await prisma.technicianProfile.findUnique({
+        where: {
+          userId:tecId
+        },
+    });
+    
+    if (!technicianProfile) {
+    throw new Error("Not Found technician Profile")
+    }
+
+
+    const result = await prisma.booking.findMany({
+        where: {
+            technicianId: technicianProfile.id,
+            
+        },
+        include: {
+            customer: {
+                omit: {
+                    password:true
+                }
+            },
+            review: true,
+            payment: true,
+            service:true
+        }
+    })
+    console.log(result)
+    return result
+}
+
 export const technicianService = {
     getAllTechnicians,
     getTechnicianById,
-    updateTechnicianProfile
+    updateTechnicianProfile,
+    getTechnicianBooking
 };

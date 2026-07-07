@@ -42,10 +42,27 @@ const updateTechnicianProfile = catchAsync(async (req:Request, res:Response, nex
     })
 })
 
+const getTechnicianBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const technicId = req.user?.id
+    
+    const result = await technicianService.getTechnicianBooking(technicId as string)
+    console.log(result)
+      sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Booking data retrive successfully ",
+        data: result
+      })
+    
+    
+    
+})
+
 
 
 export const technicianController = {
     getAllTechnicians,
     getTechnicianById,
-    updateTechnicianProfile
+    updateTechnicianProfile,
+    getTechnicianBooking
 }
