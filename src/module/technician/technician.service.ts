@@ -1,7 +1,7 @@
-import { Prisma } from "../../../generated/prisma/client";
+import { Prisma, Role } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { service } from "../services/services.service";
-import { ITechnicianQuery } from "./technician.interface";
+import { ITechnicianQuery, ITechnicianUpdate } from "./technician.interface";
 
 
 const getAllTechnicians = async (query: ITechnicianQuery) => {
@@ -12,12 +12,12 @@ const getAllTechnicians = async (query: ITechnicianQuery) => {
 
     const skip = (page - 1) * limit
 
-const allowedSortFields = ["price", "title", "createdAt", "duration"] as const;
+    const allowedSortFields = ["price", "title", "createdAt", "duration"] as const;
 
-const sortBy = allowedSortFields.includes(query.sortBy as any)
-  ? query.sortBy
+    const sortBy = allowedSortFields.includes(query.sortBy as any)
+        ? query.sortBy
         : "createdAt";
-    
+
     const sortOrder = query.sortOrder ? query.sortOrder : "desc"
 
 
@@ -116,20 +116,83 @@ const getTechnicianById = async (id: string) => {
 
     const result = await prisma.technicianProfile.findUniqueOrThrow({
         where: {
-            userId:id
+            userId: id
         },
-        include:{
-            reviews:true,
+        include: {
+            reviews: true,
         }
     })
 
     console.log("result", result)
 
-    return result 
+    return result
+}
+
+
+const updateTechnicianProfile = async (id: string, updateData: ITechnicianUpdate) => {
+
+    const existingTechnician = await prisma.technicianProfile.findUnique({
+        where: {
+            userId: id
+        }, include: {
+            user: true
+        }
+    })
+
+    if (!existingTechnician) {
+        throw new Error(`Technician with ID ${id} not found`);
+    }
+
+    if (existingTechnician.user.role !== Role.TECHNICIAN) {
+        throw new Error(`You are not authorized to update this technician profile`);
+    }
+
+    const result = await prisma.$transaction(async (tex) => {
+
+        if (updateData.name) {
+            await tex.user.update({
+                where: {
+                    id
+                }, data: {
+                    name: updateData.name
+                }
+            })
+        }
+
+
+        await tex.technicianProfile.update({
+            where: {
+                userId: id
+            },
+            data: {
+                bio: updateData.bio,
+                experience: updateData.experience,
+                location: updateData.location
+            }
+        });
+
+      return  await tex.technicianProfile.findUnique({
+            where: {
+                userId: id
+            }, include: {
+                user: {
+                    omit: {
+                        password: true,
+                    },
+                },
+            },
+
+        })
+
+
+    })
+
+    return result
 }
 
 
 export const technicianService = {
     getAllTechnicians,
-    getTechnicianById
+    getTechnicianById,
+    updateTechnicianProfile
 };

@@ -24,7 +24,7 @@ app.get('/', (req:Request, res:Response) => {
 
 app.use("/api/auth", authRouter)
 app.use("/api/categories", categoryRouter)
-app.use("/api/technicians",technicianRouter )
+app.use("/api/technician",technicianRouter )
 app.use("/api/services",serviceRouter)
 
 

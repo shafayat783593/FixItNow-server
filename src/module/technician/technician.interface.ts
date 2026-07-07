@@ -17,3 +17,12 @@ export interface ITechnicianQuery {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
+
+
+export interface ITechnicianUpdate {
+  name?: string;
+  bio?: string;
+  experience?: number;
+  location?: string;
+ 
+}
