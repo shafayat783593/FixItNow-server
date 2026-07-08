@@ -31,7 +31,8 @@ const handelWebhook = catchAsync(async (req: Request, res: Response,next:NextFun
 });
 
 const getMyPayments = catchAsync(async (req: Request, res: Response) => {
-  const payments = await paymentService.getMyPayments(req.user?.id as string);
+    const userId = req.user?.id 
+  const payments = await paymentService.getMyPayments(userId as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -41,7 +42,9 @@ const getMyPayments = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getPaymentById = catchAsync(async (req: Request, res: Response) => {
-  const payment = await paymentService.getPaymentById(req.params.id, req.user?.id as string);
+const useId = req.user?.id as string
+    const paymentId= req.params.id 
+  const payment = await paymentService.getPaymentById( paymentId as string, useId as string );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -49,6 +52,10 @@ const getPaymentById = catchAsync(async (req: Request, res: Response) => {
     data: payment,
   });
 });
+
+
+
+
 
 export const paymentController = {
   createCheckoutSession,

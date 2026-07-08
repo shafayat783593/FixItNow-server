@@ -66,7 +66,7 @@ const updateBookingStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { action } = req.body; // "ACCEPTED" or "DECLINED"
 
-    const result  = await technicianService.updateupdateTechnicianBookingStatus(userId as string, id as string, action);
+    const result  = await technicianService.updateTechnicianBookingStatus(userId as string, id as string, action);
       sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,

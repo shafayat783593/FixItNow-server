@@ -12,8 +12,12 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
 
   const transactionResult = await prisma.$transaction(async (tex) => {
     const booking = await tex.booking.findFirstOrThrow({
-      where: { id: bookingId },
-      include: { service: true, payment: true },
+        where: {
+            id: bookingId
+        },
+        include: {
+            service: true, payment: true
+        },
     });
 
     if (booking.customerId !== userId) {
@@ -45,7 +49,7 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
           mode: "payment",
       payment_method_types: ["card"],
       success_url: `${config.app_url}/booking/${booking.id}?success=true`,
-      cancel_url: `${config.app_url}/booking/${booking.id}?success=false`,
+        cancel_url: `${config.app_url}/payment?success=false`,
       metadata: {
         bookingId: booking.id,
         userId,
@@ -92,26 +96,35 @@ const handelWebhook = async (payload: Buffer, signature: string) => {
 
 const getMyPayments = async (customerId: string) => {
   return prisma.payment.findMany({
-    where: { booking: { customerId } },
-    include: { booking: { include: { service: true } } },
-    orderBy: { createdAt: "desc" },
+      where: {
+          booking: {
+              customerId
+          }
+      },
+      include: {
+          booking: {
+              include: {
+                  service: true
+              }
+          }
+      },
   });
 };
 
 const getPaymentById = async (paymentId: string, userId: string) => {
   const payment = await prisma.payment.findFirstOrThrow({
-    where: { id: paymentId },
+      where: {
+          id: paymentId
+      },
     include: {
-      booking: { include: { service: true, technician: true } },
+        booking: {
+            include: {
+                service: true,
+                technician: true
+            }
+        },
     },
   });
-
-  const isOwner =
-    payment.booking.customerId === userId || payment.booking.technician.userId === userId;
-
-  if (!isOwner) {
-    throw new Error("You are not allowed to view this payment");
-  }
 
   return payment;
 };

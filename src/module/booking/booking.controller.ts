@@ -32,7 +32,7 @@ const getMyBookings = catchAsync(async (req: Request, res: Response, next: NextF
     })
 
 })
-const getBookingById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const getBookingById =catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const bookingId = req.params.id
     const result = await bookingService.getBookingById(bookingId as string)
@@ -44,6 +44,14 @@ const getBookingById = catchAsync(async (req: Request, res: Response, next: Next
     })
 
 })
+
+const giveReviewOnTechnician = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user?.id
+    const bookingId = req.params.id
+    const result = await 
+})
+
+
 const cancelBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 

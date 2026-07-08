@@ -37,6 +37,7 @@ const getMyBookings = async (customerId: string) => {
         where: {
             customerId
         },
+
         include: {
             service: {
                 include: {
@@ -46,7 +47,6 @@ const getMyBookings = async (customerId: string) => {
             technician: true,
             payment: true,
         },
-        orderBy: { createdAt: "desc" },
     });
 
     return result

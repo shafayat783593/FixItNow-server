@@ -226,17 +226,16 @@ const getTechnicianBooking = async (tecId:string) => {
     return result
 }
 
-
-
-
-const updateupdateTechnicianBookingStatus = async (userId: string, bookingId: string ,action:BookingStatus) => {
+const updateTechnicianBookingStatus = async (userId: string, bookingId: string ,action:BookingStatus) => {
     
   const technicianProfile = await prisma.technicianProfile.findUniqueOrThrow({
     where: { userId },
   });
 
   const booking = await prisma.booking.findUnique({
-    where: { id: bookingId },
+      where: {
+          id: bookingId
+      },
   });
 
   if (!booking) {
@@ -245,10 +244,27 @@ const updateupdateTechnicianBookingStatus = async (userId: string, bookingId: st
 
   if (booking.technicianId !== technicianProfile.id) {
     throw new Error("You are not allowed to update this booking");
+    }
+    
+if (action === BookingStatus.IN_PROGRESS) {
+  if (booking.status !== BookingStatus.PAID) {
+    throw new Error("Booking must be paid before starting.");
   }
+}
+
+if (action === BookingStatus.COMPLETED) {
+  if (booking.status !== BookingStatus.IN_PROGRESS) {
+    throw new Error("Booking must be in progress before completing.");
+  }
+}
+
   const updatedBooking = await prisma.booking.update({
-    where: { id: bookingId },
-    data: { status: action },
+      where: {
+          id: bookingId
+      },
+      data: {
+          status: action
+      },
   });
 
   return updatedBooking;
@@ -258,5 +274,5 @@ export const technicianService = {
     getTechnicianById,
     updateTechnicianProfile,
     getTechnicianBooking,
-    updateupdateTechnicianBookingStatus
+    updateTechnicianBookingStatus
 };
