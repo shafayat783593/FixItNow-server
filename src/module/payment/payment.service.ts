@@ -71,8 +71,54 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
   };
 };
 
+const handelWebhook = async (payload: Buffer, signature: string) => {
+
+  const endPointSecret = config.stripe_webhook_secret as string
+    const event = stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        endPointSecret );
+
+  switch (event.type) {
+    case "checkout.session.completed":
+      await handelCheckoutCompleted(event.data.object );
+      break;
+
+    default:
+      console.log(`no event match, unhandled event type ${event.type}`);
+      break;
+  }
+};
+
+const getMyPayments = async (customerId: string) => {
+  return prisma.payment.findMany({
+    where: { booking: { customerId } },
+    include: { booking: { include: { service: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+const getPaymentById = async (paymentId: string, userId: string) => {
+  const payment = await prisma.payment.findFirstOrThrow({
+    where: { id: paymentId },
+    include: {
+      booking: { include: { service: true, technician: true } },
+    },
+  });
+
+  const isOwner =
+    payment.booking.customerId === userId || payment.booking.technician.userId === userId;
+
+  if (!isOwner) {
+    throw new Error("You are not allowed to view this payment");
+  }
+
+  return payment;
+};
 
 export const paymentService = {
   createCheckoutSession,
-
+  handelWebhook,
+  getMyPayments,
+  getPaymentById,
 };
