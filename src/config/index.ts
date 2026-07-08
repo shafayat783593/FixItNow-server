@@ -16,6 +16,8 @@ export default {
     jwt_accessToken: process.env.JWR_ACCESSTOKEN!,
     jwt_refreshToken: process.env.JWT_REFRESHTOKEN!,
     jwt_accessToken_Expire:process.env.JWT_ACCESSTOKEN_EXPIRE,
-    jwt_refreshToken_Expire:process.env.JWT_REFRESHTOKEN_EXPIRE
+    jwt_refreshToken_Expire: process.env.JWT_REFRESHTOKEN_EXPIRE,
+    stripe_secret_id: process.env.STRIPE_SECRET_ID,  
+    stripe_webhook_secret:process.env.STRIPE_WEBHOOK_SECRET
     
 }
