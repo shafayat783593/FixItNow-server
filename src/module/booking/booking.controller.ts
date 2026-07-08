@@ -45,11 +45,6 @@ const getBookingById =catchAsync(async (req: Request, res: Response, next: NextF
 
 })
 
-const giveReviewOnTechnician = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user?.id
-    const bookingId = req.params.id
-    const result = await 
-})
 
 
 const cancelBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -69,5 +64,6 @@ export const bookingController = {
     createBooking,
     getMyBookings,
     getBookingById,
-    cancelBooking
+    cancelBooking,
+    
 }

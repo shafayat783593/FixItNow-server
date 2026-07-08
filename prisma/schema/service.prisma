@@ -9,7 +9,7 @@ model Service {
   title        String
   description  String?
   price        Float
-  duration     Int?     // in minutes
+  duration     Int?     
 
   bookings     Booking[]
 

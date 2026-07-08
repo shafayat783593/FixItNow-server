@@ -1,3 +1,4 @@
+import { BookingStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { IBooking } from "./booking.interface";
 
@@ -71,6 +72,36 @@ const getBookingById = async (bookingId:string) => {
     return booking;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const cancelBooking = async (bookingId, customerId) => {
     const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
 
@@ -94,6 +125,6 @@ export const bookingService = {
     createBooking,
     getMyBookings,
     getBookingById,
-    cancelBooking
+    cancelBooking,
 
 }
