@@ -30,6 +30,21 @@ const getAllServices = catchAsync(async (req: Request, res: Response, next: Next
 })
 
 
+
+const updateAvailability = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { slots } = req.body;
+
+  const result = await service.updateAvailability(userId, slots);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Availability updated successfully",
+    data: result,
+  });
+});
+
 export const serviceController = {
     createService,
     getAllServices,

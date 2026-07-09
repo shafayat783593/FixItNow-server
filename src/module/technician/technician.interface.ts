@@ -29,6 +29,9 @@ export interface ITechnicianUpdate {
 
 
 
-export interface IBookingStatus{
-  
+export interface IAvailabilitySlot {
+  dayOfWeek: number;   
+  startTime: string;  
+  endTime: string;    
+  isAvailable?: boolean;
 }

@@ -25,3 +25,6 @@ export interface IServiceQuery {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
 }
+
+
+

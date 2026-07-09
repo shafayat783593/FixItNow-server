@@ -19,3 +19,18 @@ export interface IUpdateUser {
     role?: Role;
     status?: UserStatus;
 }
+
+
+
+export interface IBookingQuery {
+    searchItem?: string;  
+    status?: string;
+  page?: string;
+  limit?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+       
+  customerId?: string;
+  technicianId?: string;
+ 
+}

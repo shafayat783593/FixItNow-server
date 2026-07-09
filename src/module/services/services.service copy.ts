@@ -173,40 +173,8 @@ const getAllService = async (query: IServiceQuery) => {
 
 }
 
-const updateAvailability = async (userId: string, slots: IAvailabilitySlot[]) => {
-  const technicianProfile = await prisma.technicianProfile.findUniqueOrThrow({
-    where: { userId },
-  });
-
-  // পুরানো availability মুছে ফেলো
-  await prisma.availability.deleteMany({
-    where: { technicianId: technicianProfile.id },
-  });
-
-  // নতুন slot গুলো create করো
-  await prisma.availability.createMany({
-    data: slots.map((slot) => ({
-      technicianId: technicianProfile.id,
-      dayOfWeek: slot.dayOfWeek,
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-      isAvailable: slot.isAvailable ?? true,
-    })),
-  });
-
-  const result = await prisma.availability.findMany({
-    where: { technicianId: technicianProfile.id },
-  });
-
-  return result;
-};
-
-
-
 
 export const service = {
     createService,
     getAllService,
-    updateAvailability
-
 }

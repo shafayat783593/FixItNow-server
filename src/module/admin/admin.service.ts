@@ -1,28 +1,27 @@
 import { Result } from "pg"
-import { Prisma, Role, UserStatus } from "../../../generated/prisma/client"
-import { UserWhereInput } from "../../../generated/prisma/models"
+import { BookingStatus, Prisma, Role, UserStatus } from "../../../generated/prisma/client"
 import { prisma } from "../../lib/prisma"
-import { IUpdateUser, IUser } from "./admin.interface"
+import { IBookingQuery, IUpdateUser, IUser } from "./admin.interface"
 
 
 
 const getAllUser = async (query: IUser) => {
-console.log(query)
+    console.log(query)
     const limit = query.limit ? Number(query.limit) : 10
 
     const page = query.page ? Number(query.page) : 1
 
     const skip = (page - 1) * limit
 
-const allowedSortFields = ["name", "email", "createdAt"] as const;
+    const allowedSortFields = ["name", "email", "createdAt"] as const;
 
-const sortBy = allowedSortFields.includes(query.sortBy as any)
-    ? query.sortBy
-    : "createdAt";
+    const sortBy = allowedSortFields.includes(query.sortBy as any)
+        ? query.sortBy
+        : "createdAt";
 
     const sortOrder = query.sortOrder ? query.sortOrder : "desc"
 
-    const andAllUser:Prisma.UserWhereInput[] = []
+    const andAllUser: Prisma.UserWhereInput[] = []
 
     if (query.searchUser) {
         andAllUser.push({
@@ -80,7 +79,7 @@ const sortBy = allowedSortFields.includes(query.sortBy as any)
         where: {
             AND: andAllUser,
         },
-      include: {
+        include: {
             technicianProfile: true,
         },
 
@@ -96,7 +95,7 @@ const sortBy = allowedSortFields.includes(query.sortBy as any)
         where: {
             AND: andAllUser
         },
-        
+
 
     })
 
@@ -117,7 +116,7 @@ const sortBy = allowedSortFields.includes(query.sortBy as any)
 
 const updateUser = async (id: string, payload: IUpdateUser) => {
 
-    console.log("djlflf Id",id)
+    console.log("djlflf Id", id)
     const existingUser = await prisma.user.findUnique({
         where: {
             id,
@@ -147,8 +146,110 @@ const updateUser = async (id: string, payload: IUpdateUser) => {
 
 
 
+const getAllBookings = async (query: IBookingQuery) => {
+    const limit = query.limit ? Number(query.limit) : 10;
+    const page = query.page ? Number(query.page) : 1;
+    const skip = (page - 1) * limit;
+
+    const allowedSortFields = ["scheduledAt", "createdAt", "status"] as const;
+
+    const sortBy = allowedSortFields.includes(query.sortBy as any)
+        ? query.sortBy
+        : "createdAt";
+
+    const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+
+    const andConditions: Prisma.BookingWhereInput[] = [];
+
+    if (query.searchItem) {
+        andConditions.push({
+            OR: [
+                {
+                    customer: {
+                        name: {
+                            contains: query.searchItem,
+                            mode: "insensitive"
+                        },
+                    },
+                },
+                {
+                    customer: {
+                        email: {
+                            contains: query.searchItem,
+                            mode: "insensitive"
+                        },
+                    },
+                },
+            ],
+        });
+    }
+
+    if (query.status) {
+        andConditions.push({
+            status: {
+                in: query.status.split(",").map((s) => s.trim() as BookingStatus),
+            },
+        });
+    }
+
+    if (query.customerId) {
+        andConditions.push(
+            {
+                customerId: query.customerId
+            });
+    }
+
+    const result = await prisma.booking.findMany({
+        where: {
+            AND: andConditions,
+        },
+        include: {
+            customer: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                },
+            },
+            technician: true,
+            service: {
+                include: {
+                    category: true
+                }
+            },
+            payment: true,
+            review: true,
+        },
+        skip,
+        take: limit,
+        orderBy: {
+            [sortBy as string]: sortOrder,
+        },
+    });
+
+    const totalBookings = await prisma.booking.count({
+        where: { AND: andConditions },
+    });
+
+    return {
+        data: result,
+        meta: {
+            page,
+            limit,
+            total: totalBookings,
+            totalPages: Math.ceil(totalBookings / limit),
+        },
+    };
+};
+
+
+
+
+
 
 export const adminService = {
     getAllUser,
-    updateUser
+    updateUser,
+    getAllBookings
 }

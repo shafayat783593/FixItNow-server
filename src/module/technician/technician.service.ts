@@ -2,7 +2,7 @@ import { rmSync } from "node:fs";
 import { BookingStatus, Prisma, Role } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { service } from "../services/services.service";
-import { ITechnicianQuery, ITechnicianUpdate } from "./technician.interface";
+import { IAvailabilitySlot, ITechnicianQuery, ITechnicianUpdate } from "./technician.interface";
 
 
 const getAllTechnicians = async (query: ITechnicianQuery) => {
@@ -193,14 +193,11 @@ const updateTechnicianProfile = async (id: string, updateData: ITechnicianUpdate
 
 
 const getTechnicianBooking = async (tecId:string) => {
-
-
     const technicianProfile = await prisma.technicianProfile.findUnique({
         where: {
           userId:tecId
         },
     });
-    
     if (!technicianProfile) {
     throw new Error("Not Found technician Profile")
     }
@@ -209,7 +206,6 @@ const getTechnicianBooking = async (tecId:string) => {
     const result = await prisma.booking.findMany({
         where: {
             technicianId: technicianProfile.id,
-            
         },
         include: {
             customer: {
@@ -269,10 +265,48 @@ if (action === BookingStatus.COMPLETED) {
 
   return updatedBooking;
 };
+
+
+const updateAvailability = async (userId: string, slots: IAvailabilitySlot[]) => {
+  const technicianProfile = await prisma.technicianProfile.findUniqueOrThrow({
+    where: { userId },
+  });
+// delete old availability
+  await prisma.availability.deleteMany({
+    where: { technicianId: technicianProfile.id },
+  });
+
+    
+    
+  await prisma.availability.createMany({
+    data: slots.map((slot) => ({
+      technicianId: technicianProfile.id,
+      dayOfWeek: slot.dayOfWeek,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      isAvailable: slot.isAvailable ?? true,
+    })),
+  });
+
+  const result = await prisma.availability.findMany({
+      where: {
+          technicianId: technicianProfile.id
+      },
+  });
+
+  return result;
+};
+
+
+
+
+
 export const technicianService = {
     getAllTechnicians,
     getTechnicianById,
     updateTechnicianProfile,
     getTechnicianBooking,
-    updateTechnicianBookingStatus
+    updateTechnicianBookingStatus,
+    updateAvailability
+    
 };

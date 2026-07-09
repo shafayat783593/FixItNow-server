@@ -9,4 +9,5 @@ model Availability {
   isAvailable  Boolean  @default(true)
 
   @@map("availability")
+  
 }

@@ -10,6 +10,7 @@ import { adminRouter } from './module/admin/admin.route';
 import { bookingRouter } from './module/booking/booking.route';
 import { paymentRouter } from './module/payment/payment.route';
 import { reviewRouter } from './module/review/review.route';
+
 const app:Application = express()
 
 

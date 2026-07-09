@@ -64,7 +64,7 @@ const getTechnicianBooking = catchAsync(async (req: Request, res: Response, next
 const updateBookingStatus = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const { id } = req.params;
-  const { action } = req.body; // "ACCEPTED" or "DECLINED"
+  const { action } = req.body; 
 
     const result  = await technicianService.updateTechnicianBookingStatus(userId as string, id as string, action);
       sendResponse(res, {
@@ -76,10 +76,27 @@ const updateBookingStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+
+const updateAvailability = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const { slots } = req.body;
+
+  const result = await technicianService.updateAvailability(userId as string, slots);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Availability updated successfully",
+    data: result,
+  });
+});
+
+
 export const technicianController = {
     getAllTechnicians,
     getTechnicianById,
     updateTechnicianProfile,
     getTechnicianBooking,
-    updateBookingStatus
+    updateBookingStatus,
+    updateAvailability
 }
