@@ -1,33 +1,28 @@
-import { Prisma } from "../../../generated/prisma/client";
-import { prisma } from "../../lib/prisma";
-import { IService, IServiceQuery, } from "./services.interface";
-
-
-const createService = async (payload: IService, technicianId: string) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.service = void 0;
+const prisma_1 = require("../../lib/prisma");
+const createService = async (payload, technicianId) => {
     const { categoryId, title, description, price, duration } = payload;
     if (!categoryId || !title || !price || !duration) {
-        throw new Error("All fields are required")
+        throw new Error("All fields are required");
     }
-    console.log(technicianId)
-    const technician = await prisma.technicianProfile.findUnique({
+    console.log(technicianId);
+    const technician = await prisma_1.prisma.technicianProfile.findUnique({
         where: { userId: technicianId }
-    })
-
-
+    });
     if (!technician) {
-        throw new Error("Technician profile not found ! pleace create your profile first")
+        throw new Error("Technician profile not found ! pleace create your profile first");
     }
-    const category = await prisma.category.findUnique({
+    const category = await prisma_1.prisma.category.findUnique({
         where: {
             id: categoryId
         }
-
-    })
+    });
     if (!category) {
-        throw new Error("Category not found")
+        throw new Error("Category not found");
     }
-
-    const result = await prisma.service.create({
+    const result = await prisma_1.prisma.service.create({
         data: {
             technicianId: technician.id,
             categoryId,
@@ -36,29 +31,17 @@ const createService = async (payload: IService, technicianId: string) => {
             price,
             duration
         }
-
-
-    })
-    return result
-
+    });
+    return result;
 };
-
-const getAllService = async (query: IServiceQuery) => {
-    console.log("query", query)
-
-    const limit = query.limit ? Number(query.limit) : 10
-
-    const page = query.page ? Number(query.page) : 1
-
-    const skip = (page - 1) * limit
-
-
-    const sortBy = query.sortBy ? query.sortBy : "createdAt"
-
-    const sortOrder = query.sortOrder ? query.sortOrder : "desc"
-
-    const andConditions: Prisma.ServiceWhereInput[] = [];
-
+const getAllService = async (query) => {
+    console.log("query", query);
+    const limit = query.limit ? Number(query.limit) : 10;
+    const page = query.page ? Number(query.page) : 1;
+    const skip = (page - 1) * limit;
+    const sortBy = query.sortBy ? query.sortBy : "createdAt";
+    const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+    const andConditions = [];
     if (query.searchItem) {
         andConditions.push({
             OR: [
@@ -74,7 +57,6 @@ const getAllService = async (query: IServiceQuery) => {
                             mode: "insensitive",
                         }
                     },
-
                 },
                 {
                     description: {
@@ -82,11 +64,9 @@ const getAllService = async (query: IServiceQuery) => {
                         mode: "insensitive",
                     },
                 },
-
             ]
-        })
+        });
     }
-
     if (query.title) {
         andConditions.push({
             title: {
@@ -95,7 +75,6 @@ const getAllService = async (query: IServiceQuery) => {
             },
         });
     }
-
     if (query.category) {
         andConditions.push({
             category: {
@@ -104,11 +83,8 @@ const getAllService = async (query: IServiceQuery) => {
                     mode: "insensitive"
                 }
             }
-        })
-
+        });
     }
-
-
     if (query.location) {
         andConditions.push({
             technician: {
@@ -117,9 +93,8 @@ const getAllService = async (query: IServiceQuery) => {
                     mode: "insensitive"
                 }
             }
-        })
+        });
     }
-
     if (query.minPrice || query.maxPrice) {
         andConditions.push({
             price: {
@@ -128,8 +103,6 @@ const getAllService = async (query: IServiceQuery) => {
             },
         });
     }
-
-
     if (query.rating) {
         andConditions.push({
             technician: {
@@ -139,7 +112,7 @@ const getAllService = async (query: IServiceQuery) => {
             },
         });
     }
-    const service = await prisma.service.findMany({
+    const service = await prisma_1.prisma.service.findMany({
         where: {
             AND: andConditions
         },
@@ -147,20 +120,13 @@ const getAllService = async (query: IServiceQuery) => {
         skip: skip,
         orderBy: {
             [sortBy]: sortOrder
-
         },
-
-    })
-
-    const totalServiceCount = await prisma.service.count({
+    });
+    const totalServiceCount = await prisma_1.prisma.service.count({
         where: {
             AND: andConditions
         },
-
-
-    })
-
-
+    });
     return {
         data: service,
         meta: {
@@ -169,12 +135,34 @@ const getAllService = async (query: IServiceQuery) => {
             total: totalServiceCount,
             totalPages: Math.ceil(totalServiceCount / limit)
         }
-    }
-
-}
-
-
-export const service = {
+    };
+};
+const updateAvailability = async (userId, slots) => {
+    const technicianProfile = await prisma_1.prisma.technicianProfile.findUniqueOrThrow({
+        where: { userId },
+    });
+    // পুরানো availability মুছে ফেলো
+    await prisma_1.prisma.availability.deleteMany({
+        where: { technicianId: technicianProfile.id },
+    });
+    // নতুন slot গুলো create করো
+    await prisma_1.prisma.availability.createMany({
+        data: slots.map((slot) => ({
+            technicianId: technicianProfile.id,
+            dayOfWeek: slot.dayOfWeek,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            isAvailable: slot.isAvailable ?? true,
+        })),
+    });
+    const result = await prisma_1.prisma.availability.findMany({
+        where: { technicianId: technicianProfile.id },
+    });
+    return result;
+};
+exports.service = {
     createService,
     getAllService,
-}
+    updateAvailability
+};
+//# sourceMappingURL=services.service.js.map
