@@ -10,6 +10,8 @@ import { adminRouter } from './module/admin/admin.route';
 import { bookingRouter } from './module/booking/booking.route';
 import { paymentRouter } from './module/payment/payment.route';
 import { reviewRouter } from './module/review/review.route';
+import { notFound } from './middleware/notFound';
+import { globalErrorHandler } from './middleware/gooblaErrorHandler';
 
 const app:Application = express()
 
@@ -39,5 +41,7 @@ app.use("/api/bookings", bookingRouter)
 app.use("/api/payments", paymentRouter)
 app.use("/api/reviews",reviewRouter)
 
+app.use(notFound)
 
+app.use(globalErrorHandler)
 export default app
