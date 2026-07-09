@@ -51,7 +51,7 @@ const cancelBooking = catchAsync(async (req: Request, res: Response, next: NextF
     const customerId = req.user?.id
     const    bookingId=req.params.id
 
-    const result = await bookingService.cancelBooking(customerId ,bookingId)
+    const result = await bookingService.cancelBooking(customerId as string ,bookingId as string)
     sendResponse(res, {
         success: true,
         statusCode: statusCode.OK,
@@ -66,6 +66,6 @@ export const bookingController = {
     createBooking,
     getMyBookings,
     getBookingById,
-    // cancelBooking,
+    cancelBooking,
     
 }
