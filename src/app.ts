@@ -44,4 +44,5 @@ app.use("/api/reviews",reviewRouter)
 app.use(notFound)
 
 app.use(globalErrorHandler)
+
 export default app

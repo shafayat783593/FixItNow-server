@@ -78,6 +78,7 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
 const handelWebhook = async (payload: Buffer, signature: string) => {
 
   const endPointSecret = config.stripe_webhook_secret as string
+  console.log(endPointSecret)
     const event = stripe.webhooks.constructEvent(
         payload,
         signature,
@@ -85,6 +86,8 @@ const handelWebhook = async (payload: Buffer, signature: string) => {
 
   switch (event.type) {
     case "checkout.session.completed":
+        console.log("checkout completed");
+
       await handelCheckoutCompleted(event.data.object );
       break;
 

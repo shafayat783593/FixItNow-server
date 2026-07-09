@@ -4,7 +4,6 @@ import { ICategory } from "./category.interface"
 
 
 const createCategories = async (name: string, description: string) => {
-
     if (!name) {
         throw new Error("Category name is required")
 

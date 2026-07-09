@@ -25,7 +25,7 @@ export const handelCheckoutCompleted = async (session: Stripe.Checkout.Session) 
 
     await prisma.$transaction(async (tex) => {
 
-        tex.payment.update({
+       await tex.payment.update({
             where: {
                 id: payment.id
             },
@@ -34,7 +34,7 @@ export const handelCheckoutCompleted = async (session: Stripe.Checkout.Session) 
                 paidAt: new Date()
             }
         })
-        tex.booking.update({
+       await tex.booking.update({
             where: {
                 id:bookingId
             },

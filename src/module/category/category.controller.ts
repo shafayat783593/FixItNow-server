@@ -6,8 +6,8 @@ import httpStatus from "http-status"
 import { categoryService } from "./category.service";
 
 const createCategories = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const {name,descriptin} = req.body
-    const result = await categoryService.createCategories(name,descriptin)
+    const {name, description} = req.body
+    const result = await categoryService.createCategories(name,description)
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,

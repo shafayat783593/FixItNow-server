@@ -66,7 +66,6 @@ const getBookingById = async (bookingId:string) => {
             payment: true,
             customer: true,
             review:true
-      
     }
     });
     return booking;
@@ -74,35 +73,7 @@ const getBookingById = async (bookingId:string) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const cancelBooking = async (bookingId, customerId) => {
+const cancelBooking = async (bookingId:string, customerId:string) => {
     const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
 
     if (!booking) throw new Error("Booking not found");

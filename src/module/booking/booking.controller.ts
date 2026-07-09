@@ -5,7 +5,6 @@ import { send } from "node:process"
 import { sendResponse } from "../../utils/sendResponse"
 
 import statusCode from "http-status"
-import { Sign } from "node:crypto"
 
 
 const createBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -49,7 +48,10 @@ const getBookingById =catchAsync(async (req: Request, res: Response, next: NextF
 
 const cancelBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+    const customerId = req.user?.id
+    const    bookingId=req.params.id
 
+    const result = await bookingService.cancelBooking(customerId ,bookingId)
     sendResponse(res, {
         success: true,
         statusCode: statusCode.OK,
@@ -64,6 +66,6 @@ export const bookingController = {
     createBooking,
     getMyBookings,
     getBookingById,
-    cancelBooking,
+    // cancelBooking,
     
 }
