@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "target": "ES2023",
     "types": ["node"],
     "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
     "noUncheckedIndexedAccess": true,
     "strict": true,
     "isolatedModules": true,
@@ -13,6 +15,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "generated/prisma/**/*"], 
   "exclude": ["node_modules", "dist"]
 }
