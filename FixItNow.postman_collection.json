@@ -24,12 +24,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/auth/register",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/auth/register",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "auth",
@@ -54,12 +55,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/auth/login",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/auth/login",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "auth",
@@ -75,12 +77,13 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/auth/refresh-token",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/auth/refresh-token",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "auth",
@@ -102,12 +105,13 @@
               }
             ],
             "url": {
-              "raw": "http://localhost:5000/api/auth/me",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/auth/me",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "auth",
@@ -137,12 +141,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/services",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/services",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "services"
@@ -157,12 +162,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/services",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/services",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "services"
@@ -218,12 +224,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/categories?name=painting",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/categories?name=painting",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "categories"
@@ -249,12 +256,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/technician",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/technician",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "technician"
@@ -292,12 +300,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/technician/483df5d0-1ec0-427c-94e2-ec52f66a7f6a",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/technician/483df5d0-1ec0-427c-94e2-ec52f66a7f6a",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "technician",
@@ -322,12 +331,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/technician/483df5d0-1ec0-427c-94e2-ec52f66a7f6a",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/technician/483df5d0-1ec0-427c-94e2-ec52f66a7f6a",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "technician",
@@ -341,23 +351,84 @@
           "name": "Get technician's bookings",
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/technician/bookings",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "technician",
+                "bookings"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "update Booking status check",
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"action\": \"ACCEPTED\" }\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/technician/bookings/decbe6a2-9e14-4fec-81d3-0a546b70e8e3",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "technician",
+                "bookings",
+                "decbe6a2-9e14-4fec-81d3-0a546b70e8e3"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "update availability",
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"slots\": [\r\n    { \"dayOfWeek\": 0, \"startTime\": \"09:00\", \"endTime\": \"17:00\" },\r\n    { \"dayOfWeek\": 1, \"startTime\": \"09:00\", \"endTime\": \"17:00\" }\r\n  ]\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/technician/availability",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "technician",
+                "availability"
+              ]
+            }
           },
           "response": []
         }
@@ -372,12 +443,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/admin/users?status=BANNED",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/admin/users?status=BANNED",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "admin",
@@ -420,12 +492,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/admin/users/c5b4faf4-8750-495c-b61a-0ba4da9d3ceb",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/admin/users/c5b4faf4-8750-495c-b61a-0ba4da9d3ceb",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "admin",
@@ -440,7 +513,32 @@
           "name": "View all bookings",
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/admin/bookings?name=korim",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "bookings"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PAID,COMPLETED",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "korim"
+                }
+              ]
+            }
           },
           "response": []
         },
@@ -450,12 +548,13 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/categories",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/categories",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "categories"
@@ -484,12 +583,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/bookings",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/bookings",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "bookings"
@@ -502,7 +602,20 @@
           "name": "Get my bookig",
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/bookings",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ]
+            }
           },
           "response": []
         },
@@ -510,15 +623,51 @@
           "name": "Get booking details",
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/bookings/39d32cde-11a0-4ab5-8cdd-eb7adc176b80",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "39d32cde-11a0-4ab5-8cdd-eb7adc176b80"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "give reviews",
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"bookingId\": \"9ad192ca-a486-468d-a336-3abeebbd8326\",\r\n  \"rating\": 4,\r\n  \"comment\": \"Excellent work, fixed the leak quickly and professionally\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/reviews",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "reviews"
+              ]
+            }
           },
           "response": []
         },
@@ -528,12 +677,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/bookings/id/cancel",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/bookings/id/cancel",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "bookings",
@@ -550,26 +700,6 @@
       "name": "payment",
       "item": [
         {
-          "name": "get payment history",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:5000/api/payments",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "5000",
-              "path": [
-                "api",
-                "payments"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "create-Checkout",
           "request": {
             "method": "POST",
@@ -584,12 +714,13 @@
               }
             },
             "url": {
-              "raw": "http://localhost:5000/api/payments/checkout",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/payments/checkout",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "payments",
@@ -605,16 +736,38 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5000/api/payments/309e7500-1368-4e47-825c-c432c0b40970",
-              "protocol": "http",
+              "raw": "https://fixitnow-api.vercel.app/api/payments/309e7500-1368-4e47-825c-c432c0b40970",
+              "protocol": "https",
               "host": [
-                "localhost"
+                "fixitnow-api",
+                "vercel",
+                "app"
               ],
-              "port": "5000",
               "path": [
                 "api",
                 "payments",
                 "309e7500-1368-4e47-825c-c432c0b40970"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get payment history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://fixitnow-api.vercel.app/api/payments",
+              "protocol": "https",
+              "host": [
+                "fixitnow-api",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "payments"
               ]
             }
           },
