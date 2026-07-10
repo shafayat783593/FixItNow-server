@@ -15,7 +15,7 @@ const router = Router()
 
 
 
-router.post("/checkout", auth("CUSTOMER"),paymentController.createCheckoutSession);
+router.post("/checkout", auth(Role.CUSTOMER),paymentController.createCheckoutSession);
 router.post("/webhook",paymentController.handelWebhook)
 router.get("/", auth(Role.CUSTOMER), paymentController.getMyPayments);
 router.get("/:id", auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN), paymentController.getPaymentById);
