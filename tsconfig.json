@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "rootDir": "./src",                
+    "module": "NodeNext",               
+    "moduleResolution": "NodeNext",      
     "target": "ES2023",
     "types": ["node"],
     "sourceMap": true,
@@ -11,7 +12,6 @@
     "noUncheckedIndexedAccess": true,
     "strict": true,
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
   },
