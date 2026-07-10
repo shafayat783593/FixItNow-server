@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDirs": ["./src", "./generated/prisma"], 
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",           
+    "moduleResolution": "node",     
     "target": "ES2023",
     "types": ["node"],
     "sourceMap": true,
