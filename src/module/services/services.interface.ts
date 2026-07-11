@@ -9,6 +9,14 @@ export interface IService {
 }
 
 
+export interface IServiceUpdated{
+     categoryId?: string;
+    title?: string;
+    description?: string;
+    price?: number;
+    duration?: number;
+}
+
 export interface IServiceQuery {
 
     searchItem?: string;

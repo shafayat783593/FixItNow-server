@@ -117,7 +117,6 @@ const refreshTokenSave = async (token: string) => {
 
 
 const getCurrentLoginUser = async (userId: string) => {
-    console.log("userId.................................", userId)
 
     const user = await prisma.user.findFirstOrThrow({
         where: {

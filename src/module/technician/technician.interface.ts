@@ -6,6 +6,8 @@ export interface ITechnicianQuery {
 
   minExperience?: string;
   maxExperience?: string;
+  minPrice?: string;
+  maxPrice?: string;
 
   rating?: string;
 

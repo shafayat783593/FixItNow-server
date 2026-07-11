@@ -6,7 +6,6 @@ import { IBookingQuery, IUpdateUser, IUser } from "./admin.interface"
 
 
 const getAllUser = async (query: IUser) => {
-    console.log(query)
     const limit = query.limit ? Number(query.limit) : 10
 
     const page = query.page ? Number(query.page) : 1
@@ -22,6 +21,12 @@ const getAllUser = async (query: IUser) => {
     const sortOrder = query.sortOrder ? query.sortOrder : "desc"
 
     const andAllUser: Prisma.UserWhereInput[] = []
+
+       andAllUser.push({
+        role: {
+            in: [Role.CUSTOMER, Role.TECHNICIAN],
+        },
+    });
 
     if (query.searchUser) {
         andAllUser.push({
@@ -68,12 +73,11 @@ const getAllUser = async (query: IUser) => {
         });
     }
 
-    if (query.role) {
+   if (query.role && query.role !== "ADMIN") {
         andAllUser.push({
             role: query.role as Role,
         });
     }
-
 
     const result = await prisma.user.findMany({
         where: {

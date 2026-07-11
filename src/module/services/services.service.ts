@@ -1,7 +1,7 @@
 import { Prisma } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { IAvailabilitySlot } from "../technician/technician.interface";
-import { IService, IServiceQuery, } from "./services.interface";
+import { IService, IServiceQuery, IServiceUpdated, } from "./services.interface";
 
 
 const createService = async (payload: IService, technicianId: string) => {
@@ -178,10 +178,8 @@ const getAllService = async (query: IServiceQuery) => {
 
 
 
-
 export const service = {
     createService,
     getAllService,
-    
 
 }

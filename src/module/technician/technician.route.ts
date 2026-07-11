@@ -4,16 +4,13 @@ import { technicianController } from "./technician.controller";
 import { auth } from "../../middleware/auth";
 import { Role } from "../../../generated/prisma/enums";
 
-
-
 const router = Router()
-
 
 
 router.get("/bookings", auth(Role.TECHNICIAN), technicianController.getTechnicianBooking)
 router.get("/", technicianController.getAllTechnicians)
 
-router.put("/availability", auth(Role.TECHNICIAN), technicianController.updateAvailability)  // ✅ /:id এর আগে
+router.put("/availability", auth(Role.TECHNICIAN), technicianController.updateAvailability) 
 
 router.get("/:id", technicianController.getTechnicianById)
 router.put("/:id", auth(Role.TECHNICIAN), technicianController.updateTechnicianProfile)

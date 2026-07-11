@@ -17,7 +17,6 @@ export const veryfyToken = async (token: string, secret: string) => {
         }
         
     } catch (error :any) {
-        console.log("Token verification error:", error.message);
         return {
             success: false,
              error : error.message

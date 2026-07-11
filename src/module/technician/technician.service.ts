@@ -30,11 +30,16 @@ const getAllTechnicians = async (query: ITechnicianQuery) => {
             OR: [
                 {
                     user: {
-                        name: { contains: query.searchItem, mode: "insensitive" }
+                        name: {
+                            contains:query.searchItem,
+                            mode: "insensitive"
+                        }
                     }
-                }, {
+                },
+                {
                     bio: {
-                        contains: query.searchItem, mode: "insensitive"
+                        contains:query.searchItem,
+                        mode: "insensitive"
                     }
                 }
             ]
@@ -43,7 +48,8 @@ const getAllTechnicians = async (query: ITechnicianQuery) => {
     if (query.location) {
         andConditions.push({
             location: {
-                contains: query.location, mode: "insensitive"
+                contains: query.location,
+                mode: "insensitive"
             }
         })
     }
@@ -62,6 +68,20 @@ const getAllTechnicians = async (query: ITechnicianQuery) => {
             },
         });
     }
+
+
+    if (query.minPrice || query.maxPrice) {
+  andConditions.push({
+    services: {
+      some: {
+        price: {
+          gte: query.minPrice ? Number(query.minPrice) : undefined,
+          lte: query.maxPrice ? Number(query.maxPrice) : undefined,
+        },
+      },
+    },
+  });
+}
 
     if (query?.rating) {
         andConditions.push({
@@ -83,6 +103,9 @@ const getAllTechnicians = async (query: ITechnicianQuery) => {
     const technicians = await prisma.technicianProfile.findMany({
         where: {
             AND: andConditions
+        }, include: {
+            services: true,
+            availability:true
         },
 
         skip: skip,
@@ -91,13 +114,13 @@ const getAllTechnicians = async (query: ITechnicianQuery) => {
             [sortBy as string]: sortOrder
 
         },
-
-
     })
+
     const totalServiceCount = await prisma.technicianProfile.count({
         where: {
             AND: andConditions
         }
+        
     })
 
 
@@ -120,11 +143,12 @@ const getTechnicianById = async (id: string) => {
             userId: id
         },
         include: {
+            services: true,
+            availability:true,
             reviews: true,
         }
     })
 
-    console.log("result", result)
 
     return result
 }
@@ -268,12 +292,18 @@ if (action === BookingStatus.COMPLETED) {
 
 
 const updateAvailability = async (userId: string, slots: IAvailabilitySlot[]) => {
-  const technicianProfile = await prisma.technicianProfile.findUniqueOrThrow({
+  const technicianProfile = await prisma.technicianProfile.findUnique({
     where: { userId },
   });
+    if (!technicianProfile) {
+       throw new Error("Not found technicianProfile") 
+    }
+    
 // delete old availability
   await prisma.availability.deleteMany({
-    where: { technicianId: technicianProfile.id },
+      where: {
+          technicianId: technicianProfile.id
+      },
   });
 
     

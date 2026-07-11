@@ -18,9 +18,7 @@ const createCheckoutSession = catchAsync(async (req: Request, res: Response) => 
 
 const handelWebhook = catchAsync(async (req: Request, res: Response,next:NextFunction) => {
   const event = req.body as Buffer;
-  console.log(event)
     const signature = req.headers["stripe-signature"];
-console.log(signature)
   await paymentService.handelWebhook(event, signature as string);
 
   sendResponse(res, {

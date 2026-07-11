@@ -31,18 +31,15 @@ export const auth = (...requiredRoles: string[]) => {
                 req.headers.authorization;
 
 
-        console.log("token", token)
         if (!token) {
             throw new Error("You are not logged in . please log in to get access")
         }
 
         const verifyToken = await veryfyToken(token, config.jwt_accessToken)
-        console.log("verifyToken", verifyToken)
         if (!verifyToken.success) {
             throw new Error(verifyToken.error);
         }
         const { id, email, role } = verifyToken.data as JwtPayload
-        console.log(id, email, role)
         if (requiredRoles.length && !requiredRoles.includes(role)) {
             throw new Error("You do not have permission to perform this action");
 
@@ -63,9 +60,6 @@ export const auth = (...requiredRoles: string[]) => {
         }
         req.user = user
         next()
-
-
-
     })
 
 }
