@@ -3,7 +3,7 @@ import { Role, UserStatus } from "../../../generated/prisma/enums";
 
 
 export interface IUser {
-    searchUser?: string;
+    searchItem?: string;
     name?: string;
     email?: string;
     role?: string;

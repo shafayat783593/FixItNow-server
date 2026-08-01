@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt'
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken"
 import { Role } from "../../../generated/prisma/enums"
 const userRegisterInDB = async (payload: RegisterUserPayload) => {
+    console.log(payload, "registe data ")
     const { name, email, password, phone, role } = payload;
 
     const isUserExist = await prisma.user.findUnique({
@@ -55,7 +56,7 @@ const userRegisterInDB = async (payload: RegisterUserPayload) => {
         });
     })
 
-    return result 
+    return result
 
 };
 
@@ -122,7 +123,12 @@ const getCurrentLoginUser = async (userId: string) => {
         where: {
             id: userId
         },
+        omit: {
+            password: true
+        },
+
         include: {
+
             technicianProfile: true,
             bookingsAsCustomer: true,
             reviews: true

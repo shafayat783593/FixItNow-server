@@ -96,6 +96,7 @@ const getAllService = async (query: IServiceQuery) => {
             },
         });
     }
+    
 
     if (query.category) {
         andConditions.push({
@@ -174,12 +175,114 @@ const getAllService = async (query: IServiceQuery) => {
 
 }
 
+const getServiceById = async (id: string) => {
+    if (!id) {
+        throw new Error("Service not found");
+    }
+
+    const result = await prisma.service.findUniqueOrThrow({
+        where: { id },
+        include: {
+            category: true,
+            technician: {
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            phone: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    return result;
+};
 
 
 
+const updateService = async (
+    serviceId: string,
+    technicianUserId: string,
+    payload: IServiceUpdated
+) => {
+    const technician = await prisma.technicianProfile.findUnique({
+        where: { userId: technicianUserId }
+    });
+
+    if (!technician) {
+        throw new Error("Technician profile not found");
+    }
+
+    const existing = await prisma.service.findUnique({
+        where: { id: serviceId }
+    });
+
+    if (!existing) {
+        throw new Error("Service not found");
+    }
+
+    if (existing.technicianId !== technician.id) {
+        throw new Error("You are not allowed to update this service");
+    }
+
+    if (payload.categoryId) {
+        const category = await prisma.category.findUnique({
+            where: { id: payload.categoryId }
+        });
+        if (!category) {
+            throw new Error("Category not found");
+        }
+    }
+
+    const result = await prisma.service.update({
+        where: { id: serviceId },
+        data: {
+            categoryId: payload.categoryId,
+            title: payload.title,
+            description: payload.description,
+            price: payload.price,
+            duration: payload.duration,
+        },
+    });
+
+    return result;
+};
+
+
+
+const getMyServices = async (technicianUserId: string) => {
+    const technician = await prisma.technicianProfile.findUnique({
+        where: { userId: technicianUserId },
+    });
+
+    if (!technician) {
+        throw new Error("Technician profile not found");
+    }
+
+    const result = await prisma.service.findMany({
+        where: {
+            technicianId: technician.id,
+        },
+        include: {
+            category: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+
+    return result;
+};
 
 export const service = {
     createService,
     getAllService,
+    getServiceById,
 
+    updateService,
+    getMyServices
 }

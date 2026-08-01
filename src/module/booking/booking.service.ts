@@ -1,4 +1,5 @@
 import { BookingStatus } from "../../../generated/prisma/enums";
+import { Prisma } from "../../client";
 import { prisma } from "../../lib/prisma";
 import { IBooking } from "./booking.interface";
 
@@ -33,44 +34,126 @@ const createBooking = async (customerId: string, payload: IBooking) => {
 };
 
 
-const getMyBookings = async (customerId: string) => {
-    const result = prisma.booking.findMany({
-        where: {
-            customerId
-        },
+const getMyBookings = async ( query: Record<string, any>,customerId: string) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
 
-        include: {
-            service: {
-                include: {
-                    category: true
-                }
+  const sortBy = query.sortBy || "createdAt";
+  const sortOrder = query.sortOrder === "asc" ? "asc" : "desc";
+
+  const andConditions: Prisma.BookingWhereInput[] = [];
+
+
+  andConditions.push({
+    customerId,
+  });
+
+
+  if (query.status) {
+    andConditions.push({
+      status: query.status as BookingStatus,
+    });
+  }
+
+  // Search
+  if (query.searchItem) {
+    andConditions.push({
+      OR: [
+        {
+          service: {
+            title: {
+              contains: query.searchItem,
+              mode: "insensitive",
             },
-            technician: true,
-            payment: true,
+          },
         },
-    });
-
-    return result
-};
-
-const getBookingById = async (bookingId:string) => {
-    const booking = await prisma.booking.findUnique({
-        where: { id: bookingId },
-        include:{
-        technician:{
-                include: {
-                user:true
-            }
+        {
+          service: {
+            description: {
+              contains: query.searchItem,
+              mode: "insensitive",
+            },
+          },
         },
-            service: true,
-            payment: true,
-            customer: true,
-            review:true
-    }
+        {
+          technician: {
+            user: {
+              name: {
+                contains: query.searchItem,
+                mode: "insensitive",
+              },
+            },
+          },
+        },
+      ],
     });
-    return booking;
-};
+  }
 
+  const where: Prisma.BookingWhereInput = {
+    AND: andConditions,
+  };
+
+  const data = await prisma.booking.findMany({
+    where,
+    skip,
+    take: limit,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include: {
+      service: {
+        include: {
+          category: true,
+        },
+      },
+      technician: {
+        include: {
+          user: true,
+        },
+      },
+      payment: true,
+    },
+  });
+
+  const total = await prisma.booking.count({
+    where,
+  });
+
+  return {
+    data,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+type Role = "ADMIN" | "TECHNICIAN" | "CUSTOMER";
+const getBookingById = async (bookingId: string, userId: string, role: Role) => {
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      technician: { include: { user: true } },
+      service: true,
+      payment: true,
+      customer: true,
+      review: true,
+    },
+  });
+
+  if (!booking) throw new Error("Booking not found");
+
+  const isOwner =
+    booking.customerId === userId || booking.technicianId === userId;
+
+  if (role !== "ADMIN" && !isOwner) {
+    throw new Error("Not authorized to view this booking");
+  }
+
+  return booking;
+};
 
 
 const cancelBooking = async (bookingId:string, customerId:string) => {

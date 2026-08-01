@@ -28,18 +28,18 @@ const getAllUser = async (query: IUser) => {
         },
     });
 
-    if (query.searchUser) {
+    if (query.searchItem) {
         andAllUser.push({
             OR: [
                 {
                     name: {
-                        contains: query.searchUser,
+                        contains: query.searchItem,
                         mode: "insensitive",
                     },
                 },
                 {
                     email: {
-                        contains: query.searchUser,
+                        contains: query.searchItem,
                         mode: "insensitive",
                     },
                 },
@@ -120,7 +120,6 @@ const getAllUser = async (query: IUser) => {
 
 const updateUser = async (id: string, payload: IUpdateUser) => {
 
-    console.log("djlflf Id", id)
     const existingUser = await prisma.user.findUnique({
         where: {
             id,

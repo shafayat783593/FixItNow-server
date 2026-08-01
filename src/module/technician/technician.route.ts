@@ -14,10 +14,11 @@ router.put("/availability", auth(Role.TECHNICIAN), technicianController.updateAv
 
 router.get("/:id", technicianController.getTechnicianById)
 router.put("/:id", auth(Role.TECHNICIAN), technicianController.updateTechnicianProfile)
+router.delete("/:id", auth(Role.TECHNICIAN), technicianController.deleteService);
 
 router.patch("/bookings/:id", auth(Role.TECHNICIAN), technicianController.updateBookingStatus)
 
-
+router.get("/:id/available-slots",technicianController.getAvailableSlots);
 
 
 export const technicianRouter = router

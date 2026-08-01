@@ -18,8 +18,10 @@ const getAllTechnicians = catchAsync(async (req, res, next) => {
 })
 
 
-const getTechnicianById = catchAsync(async (req: Request, res:Response, next:NextFunction) => {
-    const { id } = req.params
+const getTechnicianById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+  const { id } = req.params
+  console.log(id)
     const result = await technicianService.getTechnicianById(id as string)   
     sendResponse(res, {
         success: true,
@@ -43,9 +45,10 @@ const updateTechnicianProfile = catchAsync(async (req:Request, res:Response, nex
 })
 
 const getTechnicianBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const technicId = req.user?.id
-    
-    const result = await technicianService.getTechnicianBooking(technicId as string)
+  const technicId = req.user?.id
+  const quary = req.query
+// console.log(technicId)
+    const result = await technicianService.getTechnicianBooking(technicId as string,quary)
     console.log(result)
       sendResponse(res, {
         success: true,
@@ -91,6 +94,35 @@ const updateAvailability = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAvailableSlots = catchAsync(async (req: Request, res: Response) => {
+  const { id: technicianId } = req.params;
+  const { date, serviceId } = req.query;
+
+  const result = await technicianService.getAvailableSlots(technicianId as string,date as string,serviceId as string
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Available slots retrieved successfully",
+    data: result,
+  });
+});
+
+
+const deleteService = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const technicianId = req.user?.id;
+  const result = await technicianService.deleteService(id as string, technicianId as string);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Service deleted successfully",
+    data: result,
+  });
+});
+
 
 export const technicianController = {
     getAllTechnicians,
@@ -98,5 +130,7 @@ export const technicianController = {
     updateTechnicianProfile,
     getTechnicianBooking,
     updateBookingStatus,
-    updateAvailability
+  updateAvailability,
+  getAvailableSlots,
+  deleteService,
 }

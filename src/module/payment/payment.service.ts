@@ -12,12 +12,12 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
 
   const transactionResult = await prisma.$transaction(async (tex) => {
     const booking = await tex.booking.findFirstOrThrow({
-        where: {
-            id: bookingId
-        },
-        include: {
-            service: true, payment: true
-        },
+      where: {
+        id: bookingId
+      },
+      include: {
+        service: true, payment: true
+      },
     });
 
     if (booking.customerId !== userId) {
@@ -35,7 +35,7 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
     const amount = booking.service.price;
 
     const session = await stripe.checkout.sessions.create({
-    
+
       line_items: [
         {
           price_data: {
@@ -43,13 +43,13 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
             product_data: { name: booking.service.title },
             unit_amount: Math.round(amount * 100),
           },
-              quantity: 1,
+          quantity: 1,
         },
-        ],
-          mode: "payment",
+      ],
+      mode: "payment",
       payment_method_types: ["card"],
-      success_url: `${config.app_url}/booking/${booking.id}?success=true`,
-        cancel_url: `${config.app_url}/payment?success=false`,
+      success_url: `${config.app_url}/dashboard/customer/my-bookings/${booking.id}?payment=success`,
+      cancel_url: `${config.app_url}/dashboard/customer/my-bookings/${booking.id}/pay?canceled=true`,
       metadata: {
         bookingId: booking.id,
         userId,
@@ -79,16 +79,16 @@ const handelWebhook = async (payload: Buffer, signature: string) => {
 
   const endPointSecret = config.stripe_webhook_secret as string
   console.log(endPointSecret)
-    const event = stripe.webhooks.constructEvent(
-        payload,
-        signature,
-        endPointSecret );
+  const event = stripe.webhooks.constructEvent(
+    payload,
+    signature,
+    endPointSecret);
 
   switch (event.type) {
     case "checkout.session.completed":
-        console.log("checkout completed");
+      console.log("checkout completed");
 
-      await handelCheckoutCompleted(event.data.object );
+      await handelCheckoutCompleted(event.data.object);
       break;
 
     default:
@@ -99,33 +99,33 @@ const handelWebhook = async (payload: Buffer, signature: string) => {
 
 const getMyPayments = async (customerId: string) => {
   return prisma.payment.findMany({
-      where: {
-          booking: {
-              customerId
-          }
-      },
-      include: {
-          booking: {
-              include: {
-                  service: true
-              }
-          }
-      },
+    where: {
+      booking: {
+        customerId
+      }
+    },
+    include: {
+      booking: {
+        include: {
+          service: true
+        }
+      }
+    },
   });
 };
 
 const getPaymentById = async (paymentId: string, userId: string) => {
   const payment = await prisma.payment.findFirstOrThrow({
-      where: {
-          id: paymentId
-      },
+    where: {
+      id: paymentId
+    },
     include: {
-        booking: {
-            include: {
-                service: true,
-                technician: true
-            }
-        },
+      booking: {
+        include: {
+          service: true,
+          technician: true
+        }
+      },
     },
   });
 
