@@ -516,6 +516,61 @@ const deleteService = async (serviceId: string, technicianUserId: string) => {
 
 
 
+const getDashboardStats = async (technicianUserId: string) => {
+    const technician = await prisma.technicianProfile.findUnique({
+        where: { userId: technicianUserId },
+    });
+    if (!technician) throw new Error("Technician profile not found");
+
+    const [upcomingJobs, pendingRequests, earningsAggregate] = await Promise.all([
+        prisma.booking.findMany({
+            where: {
+                technicianId: technician.id,
+                status: {
+                    in:
+                        ["ACCEPTED", "PAID", "IN_PROGRESS"]
+                },
+                scheduledAt: { gte: new Date() },
+            },
+            include: {
+                customer: {
+                    select: { id: true, name: true, phone: true }
+                },
+                service: { select: { id: true, title: true, price: true } },
+            },
+            orderBy: { scheduledAt: "asc" },
+            take: 5,
+        }),
+        prisma.booking.count({
+            where: {
+                technicianId: technician.id,
+                status: "REQUESTED",
+            },
+        }),
+        prisma.payment.aggregate({
+            _sum: {
+                amount: true
+            },
+            where: {
+                status: "COMPLETED",
+                booking: {
+                    technicianId: technician.id,
+                    status: "COMPLETED",
+                },
+            },
+        }),
+    ]);
+
+    return {
+        upcomingJobs,
+        pendingRequestsCount: pendingRequests,
+        totalEarnings: earningsAggregate._sum.amount ?? 0,
+    };
+};
+
+
+
+
 export const technicianService = {
     getAllTechnicians,
     getTechnicianById,
@@ -524,6 +579,7 @@ export const technicianService = {
     updateTechnicianBookingStatus,
     updateAvailability,
     getAvailableSlots,
-    deleteService
+    deleteService,
+    getDashboardStats
 
 };

@@ -123,6 +123,18 @@ const deleteService = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+    const technicianId = req.user?.id;
+    const result = await technicianService.getDashboardStats(technicianId as string);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Dashboard stats retrieved successfully",
+        data: result,
+    });
+});
+
 
 export const technicianController = {
     getAllTechnicians,
@@ -133,4 +145,5 @@ export const technicianController = {
   updateAvailability,
   getAvailableSlots,
   deleteService,
+  getDashboardStats
 }
