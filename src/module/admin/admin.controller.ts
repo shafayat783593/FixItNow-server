@@ -40,8 +40,19 @@ const getAllBookings = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+    
+  const result = await adminService.getDashboardStats();
+  sendResponse(res, {
+    success: true,
+    statusCode: statusCode.OK,
+    message: "Admin Stats retrieved successfully",
+    data: result,
+  });
+});
 export const adminController = {
     getAllUser,
     updateUser,
-    getAllBookings
+    getAllBookings,
+    getDashboardStats
 }

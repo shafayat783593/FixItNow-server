@@ -248,11 +248,41 @@ const getAllBookings = async (query: IBookingQuery) => {
 
 
 
+const getDashboardStats = async () => {
+    const [totalUsers, activeBookings, revenueAggregate] = await Promise.all([
+        prisma.user.count(),
+        prisma.booking.count({
+            where: {
+                status: {
+                    in: [
+                        BookingStatus.ACCEPTED,
+                        BookingStatus.IN_PROGRESS
+                    ]
+                }
+            }
+        }),
+        prisma.payment.aggregate({
+            _sum: {
+                amount:true
+            },
+            where: {
+                status:"COMPLETED"
+            }
+        })
+
+    ])
+    return {
+         totalUsers,
+        activeBookings,
+        totalRevenue: revenueAggregate._sum.amount ?? 0
+    }
+}
 
 
 
 export const adminService = {
     getAllUser,
     updateUser,
-    getAllBookings
+    getAllBookings,
+    getDashboardStats
 }

@@ -34,8 +34,8 @@ const getAllCategories = async (query: ICategory) => {
 
     const skip = (page - 1) * limit
 
-    const allowedSortFields = ["title", "createdAt", "duration"] as const;
-
+    const allowedSortFields = ["name", "createdAt"] as const;
+    
     const sortBy = allowedSortFields.includes(query.sortBy as any)
         ? query.sortBy
         : "createdAt";
@@ -101,15 +101,17 @@ const getAllCategories = async (query: ICategory) => {
 
     const totalCategoriesCount = await prisma.category.count({
         where: {
-            AND: andConditions
+            AND: andConditions  
         }
     })
     return {
         data: result,
-        total: totalCategoriesCount,
+        meta: {
+            total: totalCategoriesCount,
         page: page,
         limit: limit,
         totalPages: Math.ceil(totalCategoriesCount / limit)
+       }
     }
 
 }
@@ -136,15 +138,23 @@ const updateCategory = async (id: string, name: string, description: string) => 
 const deleteCategory = async (id: string) => {
     const existingCategory = await prisma.category.findUnique({
         where: { id }
-    })
+    });
     if (!existingCategory) {
-        throw new Error("Category not found")
+        throw new Error("Category not found");
     }
+
+    const serviceCount = await prisma.service.count({ where: { categoryId: id } });
+    if (serviceCount > 0) {
+        throw new Error(
+            "This category has services under it and can't be deleted. Move or delete those services first."
+        );
+    }
+
     const result = await prisma.category.delete({
         where: { id }
-    })
-    return result
-}
+    });
+    return result;
+};
 
 export const categoryService = {
     createCategories,

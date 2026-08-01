@@ -8,6 +8,7 @@ const router = Router()
 router.get("/users", auth(Role.ADMIN), adminController.getAllUser)
 router.put("/users/:id", auth(Role.ADMIN), adminController.updateUser)
 router.get("/bookings", auth(Role.ADMIN), adminController.getAllBookings);
+router.get("/stats",auth(Role.ADMIN),adminController.getDashboardStats)
 
 
 export const adminRouter = router
