@@ -13,7 +13,7 @@ router.get("/", technicianController.getAllTechnicians)
 router.put("/availability", auth(Role.TECHNICIAN), technicianController.updateAvailability) 
 router.get("/stats", auth(Role.TECHNICIAN), technicianController.getDashboardStats);
 router.get("/:id", technicianController.getTechnicianById)
-router.put("/:id", auth(Role.TECHNICIAN), technicianController.updateTechnicianProfile)
+router.patch("/", auth(Role.TECHNICIAN), technicianController.updateTechnicianProfile)
 router.delete("/:id", auth(Role.TECHNICIAN), technicianController.deleteService);
 
 router.patch("/bookings/:id", auth(Role.TECHNICIAN), technicianController.updateBookingStatus)

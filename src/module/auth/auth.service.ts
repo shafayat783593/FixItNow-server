@@ -2,7 +2,7 @@ import { ref } from "node:process"
 import config from "../../config"
 import { prisma } from "../../lib/prisma"
 import { createToken, veryfyToken, } from "../../utils/jwt"
-import { ILogin, RegisterUserPayload } from "./auth.interface"
+import { ILogin, IUserDataUpdate, RegisterUserPayload } from "./auth.interface"
 import bcrypt from 'bcrypt'
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken"
 import { Role } from "../../../generated/prisma/enums"
@@ -144,9 +144,33 @@ const getCurrentLoginUser = async (userId: string) => {
     return rest;
 
 }
+
+const updateUserPrifile = async (userId: string, userData: IUserDataUpdate) => {
+    const existingUser = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+
+    if (!existingUser) {
+        throw new Error(`User with ID ${userId} not found`);
+    }
+
+    const update = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            name: userData.name,
+            phone: userData.phone,
+            avatar: userData.avatar,
+           
+        },
+        omit: { password: true },
+    });
+
+    return update;
+};
 export const authService = {
     userRegisterInDB,
     userLoginInDB,
     refreshTokenSave,
-    getCurrentLoginUser
+    getCurrentLoginUser,
+    updateUserPrifile
 }

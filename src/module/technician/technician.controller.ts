@@ -33,8 +33,9 @@ const getTechnicianById = catchAsync(async (req: Request, res: Response, next: N
 
 
 const updateTechnicianProfile = catchAsync(async (req:Request, res:Response, next:NextFunction) => {
-    const { id } = req.params
-    const updateData = req.body
+    const id = req.user?.id
+  const updateData = req.body
+  console.log(updateData)
     const result = await technicianService.updateTechnicianProfile(id as string, updateData)
     sendResponse(res, {
         success: true,

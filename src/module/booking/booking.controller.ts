@@ -11,6 +11,7 @@ const createBooking = catchAsync(async (req: Request, res: Response, next: NextF
 
     const customerId = req.user?.id
     const payload = req.body
+    console.log("payload........................",payload)
     const result = await bookingService.createBooking(customerId as string, payload)
     sendResponse(res, {
         success: true,
@@ -64,10 +65,24 @@ const cancelBooking = catchAsync(async (req: Request, res: Response, next: NextF
 })
 
 
+const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+    const customerId = req.user?.id;
+    const result = await bookingService.getDashboardStats(customerId as string);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: statusCode.OK,
+        message: "Dashboard stats retrieved successfully",
+        data: result,
+    });
+});
+
+
 export const bookingController = {
     createBooking,
     getMyBookings,
     getBookingById,
     cancelBooking,
+    getDashboardStats
     
 }

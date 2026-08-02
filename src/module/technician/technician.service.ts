@@ -17,7 +17,6 @@ const minutesToTime = (mins: number): string => {
     return `${h}:${m}`;
 };
 
-// combines a "YYYY-MM-DD" date string with an "HH:mm" time string into a real Date
 const combineDateAndTime = (date: string, time: string): Date => {
     const [h, m] = time.split(":").map(Number);
     const combined = new Date(date);
@@ -205,7 +204,9 @@ const updateTechnicianProfile = async (id: string, updateData: ITechnicianUpdate
                 where: {
                     id
                 }, data: {
-                    name: updateData.name
+                    name: updateData.name,
+                    avatar: updateData.avatar,
+                    phone:updateData.phone
                 }
             })
         }
@@ -220,7 +221,9 @@ const updateTechnicianProfile = async (id: string, updateData: ITechnicianUpdate
                 experience: updateData.experience,
                 location: updateData.location
             }
+
         });
+    
 
         return await tex.technicianProfile.findUnique({
             where: {
@@ -245,78 +248,78 @@ const updateTechnicianProfile = async (id: string, updateData: ITechnicianUpdate
 
 
 interface IBookingQuery {
-  page?: string | number;
-  limit?: string | number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  status?: BookingStatus; 
+    page?: string | number;
+    limit?: string | number;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+    status?: BookingStatus;
 }
 
-export const getTechnicianBooking = async (tecId: string,query: IBookingQuery ) => {
-  const limit = query.limit ? Number(query.limit) : 10;
-  const page = query.page ? Number(query.page) : 1;
-  const skip = (page - 1) * limit;
+export const getTechnicianBooking = async (tecId: string, query: IBookingQuery) => {
+    const limit = query.limit ? Number(query.limit) : 10;
+    const page = query.page ? Number(query.page) : 1;
+    const skip = (page - 1) * limit;
 
-  const sortBy = query.sortBy || "createdAt";
-  const sortOrder = query.sortOrder || "desc";
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = query.sortOrder || "desc";
 
- 
-  const technicianProfile = await prisma.technicianProfile.findUnique({
-    where: {
-      userId: tecId,
-    },
-  });
 
-  if (!technicianProfile) {
-    throw new Error("Technician Profile Not Found");
-  }
-
-  // 2. Build Where Conditions for Booking
-  const whereConditions: Prisma.BookingWhereInput = {
-    technicianId: technicianProfile.id,
-  };
-
-  // Add Status Filter if provided in query
-  if (query.status) {
-    whereConditions.status = query.status;
-  }
-
-  // 3. Fetch Bookings and Total Count concurrently using Promise.all
-  const [booking, totalBooking] = await Promise.all([ prisma.booking.findMany({
-      where: whereConditions,
-      include: {
-        customer: {
-          omit: {
-            password: true,
-          },
+    const technicianProfile = await prisma.technicianProfile.findUnique({
+        where: {
+            userId: tecId,
         },
-        review: true,
-        payment: true,
-        service: true,
-      },
-      skip,
-      take: limit,
-      orderBy: {
-        [sortBy]: sortOrder,
-      },
-  }),
-      
-      
-    prisma.booking.count({
-      where: whereConditions,
-    }),
-  ]);
-    
+    });
 
-  return {
-    data: booking,
-    meta: {
-      page,
-      limit,
-      total: totalBooking,
-      totalPages: Math.ceil(totalBooking / limit),
-    },
-  };
+    if (!technicianProfile) {
+        throw new Error("Technician Profile Not Found");
+    }
+
+    // 2. Build Where Conditions for Booking
+    const whereConditions: Prisma.BookingWhereInput = {
+        technicianId: technicianProfile.id,
+    };
+
+    // Add Status Filter if provided in query
+    if (query.status) {
+        whereConditions.status = query.status;
+    }
+
+    // 3. Fetch Bookings and Total Count concurrently using Promise.all
+    const [booking, totalBooking] = await Promise.all([prisma.booking.findMany({
+        where: whereConditions,
+        include: {
+            customer: {
+                omit: {
+                    password: true,
+                },
+            },
+            review: true,
+            payment: true,
+            service: true,
+        },
+        skip,
+        take: limit,
+        orderBy: {
+            [sortBy]: sortOrder,
+        },
+    }),
+
+
+    prisma.booking.count({
+        where: whereConditions,
+    }),
+    ]);
+
+
+    return {
+        data: booking,
+        meta: {
+            page,
+            limit,
+            total: totalBooking,
+            totalPages: Math.ceil(totalBooking / limit),
+        },
+    };
 };
 
 const updateTechnicianBookingStatus = async (userId: string, bookingId: string, action: BookingStatus) => {
@@ -493,25 +496,25 @@ const getAvailableSlots = async (
 
 const deleteService = async (serviceId: string, technicianUserId: string) => {
     console.log(serviceId)
-  const technician = await prisma.technicianProfile.findUnique({
-    where: { userId: technicianUserId },
-  });
-  if (!technician) throw new Error("Technician profile not found");
+    const technician = await prisma.technicianProfile.findUnique({
+        where: { userId: technicianUserId },
+    });
+    if (!technician) throw new Error("Technician profile not found");
 
-  const existing = await prisma.service.findUnique({ where: { id: serviceId } });
-  if (!existing) throw new Error("Service not found");
-  if (existing.technicianId !== technician.id) {
-    throw new Error("Not authorized to delete this service");
-  }
+    const existing = await prisma.service.findUnique({ where: { id: serviceId } });
+    if (!existing) throw new Error("Service not found");
+    if (existing.technicianId !== technician.id) {
+        throw new Error("Not authorized to delete this service");
+    }
 
-  const bookingCount = await prisma.booking.count({ where: { serviceId } });
-  if (bookingCount > 0) {
-    throw new Error(
-      "This service has existing bookings and can't be deleted. Remove it from public listing instead, or contact support."
-    );
-  }
+    const bookingCount = await prisma.booking.count({ where: { serviceId } });
+    if (bookingCount > 0) {
+        throw new Error(
+            "This service has existing bookings and can't be deleted. Remove it from public listing instead, or contact support."
+        );
+    }
 
-  return prisma.service.delete({ where: { id: serviceId } });
+    return prisma.service.delete({ where: { id: serviceId } });
 };
 
 

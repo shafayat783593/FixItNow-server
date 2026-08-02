@@ -75,11 +75,24 @@ const getCurrentUser = catchAsync(async (req:Request, res:Response, next: NextFu
         data:result
     })
 })
+const updateUserPrifile = catchAsync(async (req:Request, res:Response, next: NextFunction) => {
+    const userId = req.user?.id
+    const payload = req.body
+   
+    const result = await authService.updateUserPrifile(userId as string, payload)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User profile updated successfully",
+        data:result
+    })
+})
 
 export const authController = {
     registerUser,  
     loginUser,
     refreshToken,
-    getCurrentUser
+    getCurrentUser,
+updateUserPrifile    
     
 }

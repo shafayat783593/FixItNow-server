@@ -9,7 +9,8 @@ const router = Router()
 router.post("/register", authController.registerUser)
 router.post("/login", authController.loginUser)
 router.post("/refresh-token", authController.refreshToken)
-router.get("/me",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),authController.getCurrentUser)
+router.get("/me", auth(Role.CUSTOMER, Role.TECHNICIAN, Role.ADMIN), authController.getCurrentUser)
+router.patch("/profile-update",auth(Role.ADMIN,Role.CUSTOMER,Role.TECHNICIAN),authController.updateUserPrifile)
 
 export const authRouter = router
 

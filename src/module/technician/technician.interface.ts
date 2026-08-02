@@ -26,6 +26,9 @@ export interface ITechnicianUpdate {
   bio?: string;
   experience?: number;
   location?: string;
+  avatar?: string,
+  phone?:string
+  
  
 }
 

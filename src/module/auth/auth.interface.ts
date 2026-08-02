@@ -12,3 +12,11 @@ export interface ILogin{
     email: string,
     password:string
 }
+
+
+export interface IUserDataUpdate{
+  name?: string;
+  bio?: string;
+  avatar?: string,
+  phone?:string
+}

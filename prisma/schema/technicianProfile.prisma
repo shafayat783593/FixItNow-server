@@ -4,6 +4,7 @@ model TechnicianProfile {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   bio         String?
+  skills      String[]
   experience  Int?     
   location    String?
   rating      Float    @default(0)

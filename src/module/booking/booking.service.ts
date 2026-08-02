@@ -175,10 +175,67 @@ const cancelBooking = async (bookingId:string, customerId:string) => {
 };
 
 
+
+const getDashboardStats = async (customerId: string) => {
+    const [totalBookings, activeBookings, completedBookings, spendAggregate, recentBookings] =
+        await Promise.all([
+          prisma.booking.count({
+            where: {
+              customerId
+            }
+          }),
+            prisma.booking.count({
+                where: {
+                    customerId,
+                status: {
+                  in: ["REQUESTED", "ACCEPTED", "PAID", "IN_PROGRESS"]
+                },
+                },
+            }),
+            prisma.booking.count({
+              where: {
+                customerId, status: "COMPLETED"
+              },
+            }),
+            prisma.payment.aggregate({
+                _sum: { amount: true },
+                where: {
+                    status: "COMPLETED",
+                    booking: { customerId },
+                },
+            }),
+            prisma.booking.findMany({
+                where: { customerId },
+                include: {
+                  service: {
+                    select: {
+                      id: true, title: true, price: true
+                    }
+                  },
+                  technician: {
+                    include: { user: { select: { name: true } } }
+                  },
+                },
+                orderBy: { createdAt: "desc" },
+                take: 5,
+            }),
+        ]);
+
+    return {
+        totalBookings,
+        activeBookings,
+        completedBookings,
+        totalSpent: spendAggregate._sum.amount ?? 0,
+        recentBookings,
+    };
+};
+
+
 export const bookingService = {
     createBooking,
     getMyBookings,
     getBookingById,
-    cancelBooking,
+  cancelBooking,
+    getDashboardStats
 
 }
