@@ -53,8 +53,8 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
       mode: "payment",
       payment_method_types: ["card"],
 
-success_url: `${config.app_url}/dashboard/customer/payments/success?bookingId=${booking.id}`,
-cancel_url: `${config.app_url}/dashboard/customer/payments/cancle?bookingId=${booking.id}`,
+      success_url: `${config.app_url}/dashboard/customer/payments/success?bookingId=${booking.id}`,
+      cancel_url: `${config.app_url}/dashboard/customer/payments/cancle?bookingId=${booking.id}`,
       metadata: { bookingId: booking.id, userId },
     });
 

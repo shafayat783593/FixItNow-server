@@ -45,7 +45,7 @@ const createService = async (payload: IService, technicianId: string) => {
 };
 
 const getAllService = async (query: IServiceQuery) => {
-    console.log("query", query)
+    console.log("query........................", query)
 
     const limit = query.limit ? Number(query.limit) : 10
 
