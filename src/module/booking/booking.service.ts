@@ -29,7 +29,7 @@ const createBooking = async (customerId: string, payload: IBooking) => {
             status: "REQUESTED",
         },
     });
-
+console.log("Booking created:", result);
     return result;
 };
 

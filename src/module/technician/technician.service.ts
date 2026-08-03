@@ -130,7 +130,12 @@ const getAllTechnicians = async (query: ITechnicianQuery) => {
             AND: andConditions
         }, include: {
             services: true,
-            availability: true
+            availability: true,
+            user: {
+                omit: {
+                password: true,
+            }
+            }
         },
 
         skip: skip,
@@ -171,6 +176,12 @@ const getTechnicianById = async (id: string) => {
             services: true,
             availability: true,
             reviews: true,
+            user: {
+                select: {
+                    avatar: true,
+                    name: true,
+               } 
+            }
         }
     })
 

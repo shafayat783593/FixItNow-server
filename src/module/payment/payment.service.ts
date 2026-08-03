@@ -9,12 +9,9 @@ import { stripe } from "../../lib/stripe";
 import { handelCheckoutCompleted } from "./payment.utils";
 
 const createCheckoutSession = async (userId: string, bookingId: string) => {
-
   const transactionResult = await prisma.$transaction(async (tex) => {
     const booking = await tex.booking.findFirstOrThrow({
-      where: {
-        id: bookingId
-      },
+      where: { id: bookingId },
       include: {
         service: true, payment: true
       },
@@ -28,14 +25,21 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
       throw new Error(`Cannot pay for a booking with status ${booking.status}`);
     }
 
-    if (booking.payment) {
-      throw new Error("Payment already exists for this booking");
+    if (booking.payment && booking.payment.status === PaymentStatus.COMPLETED) {
+      throw new Error("Payment already completed for this booking");
+    }
+
+    if (booking.payment && booking.payment.status === PaymentStatus.PENDING) {
+      await tex.payment.delete({
+        where: {
+          id: booking.payment.id
+        }
+      });
     }
 
     const amount = booking.service.price;
 
     const session = await stripe.checkout.sessions.create({
-
       line_items: [
         {
           price_data: {
@@ -48,12 +52,10 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
       ],
       mode: "payment",
       payment_method_types: ["card"],
-      success_url: `${config.app_url}/dashboard/customer/my-bookings/${booking.id}?payment=success`,
-      cancel_url: `${config.app_url}/dashboard/customer/my-bookings/${booking.id}/pay?canceled=true`,
-      metadata: {
-        bookingId: booking.id,
-        userId,
-      },
+
+success_url: `${config.app_url}/dashboard/customer/payments/success?bookingId=${booking.id}`,
+cancel_url: `${config.app_url}/dashboard/customer/payments/cancle?bookingId=${booking.id}`,
+      metadata: { bookingId: booking.id, userId },
     });
 
     await tex.payment.create({
@@ -70,9 +72,7 @@ const createCheckoutSession = async (userId: string, bookingId: string) => {
     return session.url;
   });
 
-  return {
-    paymentUrl: transactionResult,
-  };
+  return { paymentUrl: transactionResult };
 };
 
 const handelWebhook = async (payload: Buffer, signature: string) => {
